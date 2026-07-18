@@ -9,7 +9,21 @@ RelyKit is a white-label, provider-neutral OpenID Connect toolkit for relying ap
 - `@relykit/oidc` provides framework-independent server-side discovery, Authorization Code + S256 PKCE, state and nonce protection, token verification, optional UserInfo, identity-profile strategies, logout discovery, and pure access decisions.
 - `@relykit/nuxt` adapts those primitives to Nuxt 4 and Nitro with configurable routes, sealed sessions, page middleware, protected APIs, and an application principal adapter.
 
-## Nuxt quick start
+## Connect RelyKit to IdFabric
+
+IdFabric is the identity provider: it owns authentication, accounts, MFA, recovery, realms, organizations, teams, invitations, bans, and OAuth clients. RelyKit is installed in each website or SaaS and owns only that application's OIDC flow and local application session. The application remains responsible for its own active-account decision, roles, permissions, and resource authorization.
+
+### 1. Register the application in IdFabric
+
+1. Choose the IdFabric **realm** for this application and note its exact issuer, such as `https://identity.example.com/api/auth`.
+2. In that realm, sign in as an administrator and open `/admin/oauth-clients`.
+3. Create a **confidential web** client with a stable client ID, the exact callback `https://app.example.com/api/auth/callback`, the exact post-logout URL `https://app.example.com/`, and `openid profile email` scopes. Add `offline_access` or `tenant` only when needed.
+4. Save the generated client secret immediately. IdFabric shows it only once.
+5. Confirm `<issuer>/.well-known/openid-configuration` is reachable from the application server.
+
+Callback and logout URLs are exact-match values. Register separate clients for local development and production instead of weakening redirect validation.
+
+### 2. Install and configure RelyKit
 
 After publication, install both coordinated packages at the same version:
 
@@ -54,9 +68,44 @@ export default defineNuxtConfig({
 })
 ```
 
-Supply `NUXT_AUTH_ISSUER`, `NUXT_AUTH_CLIENT_ID`, `NUXT_AUTH_CLIENT_SECRET`, `NUXT_AUTH_REDIRECT_URI`, and `NUXT_AUTH_SESSION_PASSWORD` through the server environment. Never expose them through `runtimeConfig.public`.
+Use server-only environment variables. Never expose these values through `runtimeConfig.public`:
 
-The principal adapter maps a verified external identity to the application's authoritative local principal. RelyKit reloads that principal on protected requests so suspensions and permission changes take effect without waiting for the login session to expire.
+```dotenv
+NUXT_AUTH_ISSUER=https://identity.example.com/api/auth
+NUXT_AUTH_CLIENT_ID=my-saas
+NUXT_AUTH_CLIENT_SECRET=<the-secret-shown-once-by-idfabric>
+NUXT_AUTH_CLIENT_AUTHENTICATION_METHOD=client_secret_basic
+NUXT_AUTH_REDIRECT_URI=https://app.example.com/api/auth/callback
+NUXT_AUTH_POST_LOGOUT_REDIRECT_URI=https://app.example.com/
+NUXT_AUTH_SCOPES=openid profile email
+NUXT_AUTH_SESSION_PASSWORD=<at-least-32-characters-of-independent-random-data>
+```
+
+The RelyKit session password is not the IdFabric client secret. Generate and rotate it independently, keep both values in the application's secret manager, and use HTTPS outside loopback development.
+
+### 3. Map the identity to a local application principal
+
+The principal adapter maps a verified external identity to the application's authoritative local principal. Bind it by immutable `identity.issuer` plus `identity.subject`, then reload active state and product permissions on protected requests. Email and name are display snapshots, not authorization keys. See the working [principal-adapter example](examples/nuxt/server/principal-adapter.ts).
+
+### 4. Add sign-in, access policy, and a connection test
+
+The application owns its sign-in page. Link it to RelyKit's login handler and keep `returnTo` local:
+
+```vue
+<script setup lang="ts">
+import { safeReturnPath } from '@relykit/oidc/access'
+
+definePageMeta({ auth: 'guest-only' })
+const route = useRoute()
+const loginHref = computed(() => `/api/auth/login?${new URLSearchParams({
+  returnTo: safeReturnPath(route.query.returnTo),
+}).toString()}`)
+</script>
+
+<template>
+  <a :href="loginHref">Continue with identity provider</a>
+</template>
+```
 
 Pages are protected by default. Override a page deliberately:
 
@@ -65,6 +114,17 @@ definePageMeta({ auth: 'public' })
 definePageMeta({ auth: 'guest-only' })
 definePageMeta({ auth: { permission: 'calendar:write' } })
 ```
+
+Start the application and verify this sequence:
+
+1. A protected page redirects to the application sign-in page.
+2. Continue redirects to the expected IdFabric realm.
+3. IdFabric returns to `/api/auth/callback`, and RelyKit creates the application session.
+4. A protected API succeeds only for an active local principal with the required application permission.
+5. Logout clears the local session and uses IdFabric's advertised end-session endpoint.
+6. An authenticated IdFabric identity with no active local principal reaches the application's access-denied page.
+
+If the callback fails, compare the configured issuer, client ID, callback URL, authentication method, and scopes character-for-character with the IdFabric client. See the private [IdFabric README](https://github.com/bi0nd0/idfabric#connect-a-nuxt-application-with-relykit) for the provider side of the same handoff.
 
 ## Security boundary
 
