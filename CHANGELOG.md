@@ -2,7 +2,7 @@
 
 All notable changes are documented here. RelyKit follows coordinated package versions.
 
-## 0.1.0-beta.0 - Unpublished
+## 0.1.0-beta.0 - 2026-07-17
 
 - Extracted the relying-application OIDC and Nuxt behavior into an independent two-package workspace.
 - Replaced provider-specific identity claims with a standard identity and application-supplied profile strategy.
@@ -11,3 +11,4 @@ All notable changes are documented here. RelyKit follows coordinated package ver
 - Renamed Nuxt imports, aliases, runtime configuration, state, and principal context.
 - Added configurable neutral routes, cookies, and client state while retaining protected pages/APIs and authoritative principal reload.
 - Added provider-neutral, white-label, package-content, production fixture, and release gates.
+- Published the reviewed bootstrap artifacts under the `bootstrap` tag.

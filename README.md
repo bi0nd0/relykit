@@ -2,7 +2,7 @@
 
 RelyKit is a white-label, provider-neutral OpenID Connect toolkit for relying applications. It handles authentication plumbing; your application keeps ownership of users, account status, roles, permissions, pages, wording, and branding.
 
-> **Release status:** prerelease development. The npm packages have not been published. RelyKit is MIT-licensed and its scoped packages are configured for public access.
+> **Release status:** `0.1.0-beta.0` is published as a bootstrap prerelease. It is not a stable release. RelyKit is MIT-licensed and its scoped packages are public.
 
 ## Packages
 
@@ -25,10 +25,10 @@ Callback and logout URLs are exact-match values. Register separate clients for l
 
 ### 2. Install and configure RelyKit
 
-After publication, install both coordinated packages at the same version:
+Install both coordinated packages at the same exact prerelease version:
 
 ```bash
-npm install @relykit/oidc @relykit/nuxt
+npm install @relykit/oidc@0.1.0-beta.0 @relykit/nuxt@0.1.0-beta.0
 ```
 
 Configure the module and server-only runtime values:

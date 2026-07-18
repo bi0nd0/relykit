@@ -11,7 +11,7 @@ RelyKit uses one fixed version for `@relykit/oidc` and `@relykit/nuxt`. The Nuxt
 - Security contact: GitHub private vulnerability reporting.
 - Supported prerelease range: Node.js >=22.18 and <27, npm >=10 and <12, and Nuxt >=4.4 and <5.
 
-The remaining publication gate is the owner's interactive bootstrap publish. No stable package may be released before the registry-installed prerelease and Rent Helper smoke pass.
+The interactive `0.1.0-beta.0` bootstrap is published. The remaining prerelease gates are trusted-publisher configuration, the provenance-backed `0.1.0-beta.1` release, and the registry-installed Rent Helper smoke pass. No stable package may be released before those gates pass.
 
 ## Owner responsibilities
 
@@ -27,7 +27,7 @@ The repository owner performs npm sign-in, organization/scope creation, maintain
 
 ## Bootstrap and trusted publishing
 
-An npm package must already exist before a trusted publisher can be configured. Therefore, the owner first publishes reviewed `0.1.0-beta.0` bootstrap tarballs interactively under a non-default `bootstrap` tag. After both package pages exist, configure a trusted publisher for each package.
+An npm package must already exist before a trusted publisher can be configured. The reviewed `0.1.0-beta.0` bootstrap tarballs created both package pages interactively under a non-default `bootstrap` tag. Configure a trusted publisher for each package before publishing another version.
 
 The release workflow is `.github/workflows/release.yml`, environment `npm`, and future packages are published through GitHub's OIDC identity. Configure npm trusted publishers only against the exact `bi0nd0/relykit` repository, `release.yml` workflow filename, and `npm` environment. Allow `npm publish`.
 
@@ -54,18 +54,16 @@ npm trust github @relykit/nuxt --repo bi0nd0/relykit --file release.yml --env np
 
 These commands require the owner's interactive npm authentication and 2FA. The trust form is not validated when saved, so verify every case-sensitive field before the first workflow publication.
 
-## Bootstrap publication commands
+## Bootstrap publication record
 
-The bootstrap must not use `latest`. From a clean checkout of the reviewed release commit, first verify the npm identity and frozen artifacts, then publish the exact tarballs:
+The bootstrap was published from commit `2f96174` after verifying npm identity `bi0nd0` and these frozen SHA-256 checksums:
 
-```bash
-npm whoami
-shasum -a 256 .artifacts/relykit-oidc-0.1.0-beta.0.tgz .artifacts/relykit-nuxt-0.1.0-beta.0.tgz
-npm publish --access public --tag bootstrap .artifacts/relykit-oidc-0.1.0-beta.0.tgz
-npm publish --access public --tag bootstrap .artifacts/relykit-nuxt-0.1.0-beta.0.tgz
+```text
+@relykit/oidc  00b676488a44c9f6cd0d8866403df9dafcaa5bd2b6e639df8df920cf2f9a14e4
+@relykit/nuxt  12aebab7bb56601e7655edaab3cd2acaea943402c769ad03c8961df251d025e6
 ```
 
-The expected identity is `bi0nd0`. npm may request the account's 2FA code during each publish; enter it only in npm's terminal prompt. Stop if the displayed package name, version, access, or file list differs from the reviewed artifact. These commands create only the `bootstrap` tag and do not create or move `latest`.
+Registry downloads match both frozen checksums. npm retained an initial `latest` tag in addition to `bootstrap` and rejected its removal with HTTP 400 while `0.1.0-beta.0` is the only published version. Do not unpublish the version to work around that registry behavior. Consumers must install the exact prerelease version; no future prerelease workflow may select or move `latest`.
 
 After both package pages exist, configure the trusted publishers exactly as shown above. The coordinated `0.1.0-beta.1` release is then dispatched through GitHub Actions with `tag=next`, `access=public`, and `dry_run=false`; the owner approves the protected `npm` environment when prompted.
 
@@ -73,7 +71,7 @@ After both package pages exist, configure the trusted publishers exactly as show
 
 - If the second package fails, do not publish a different build under the same version. Correct the cause, choose a new prerelease version, rebuild both packages, and repeat validation.
 - Do not unpublish a consumed version as routine rollback. Move dist-tags away from the bad prerelease and release a corrected version.
-- Never promote a prerelease to `latest` until a registry-installed consumer and the Rent Helper production smoke pass.
+- Do not move the initial `latest` tag to another prerelease. The first deliberate `latest` promotion is the stable release after the registry-installed consumer and Rent Helper production smoke pass.
 
 ## Authoritative npm references
 
