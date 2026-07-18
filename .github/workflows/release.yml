@@ -54,11 +54,11 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: relykit-${{ inputs.version }}
-          path: .artifacts/*.tgz
+          path: release-artifacts/*.tgz
           if-no-files-found: error
       - name: Publish OIDC package
         if: ${{ inputs.dry_run == false }}
-        run: npm publish ".artifacts/relykit-oidc-${{ inputs.version }}.tgz" --access "${{ inputs.access }}" --tag "${{ inputs.tag }}"
+        run: npm publish "release-artifacts/relykit-oidc-${{ inputs.version }}.tgz" --access "${{ inputs.access }}" --tag "${{ inputs.tag }}"
       - name: Publish Nuxt package
         if: ${{ inputs.dry_run == false }}
-        run: npm publish ".artifacts/relykit-nuxt-${{ inputs.version }}.tgz" --access "${{ inputs.access }}" --tag "${{ inputs.tag }}"
+        run: npm publish "release-artifacts/relykit-nuxt-${{ inputs.version }}.tgz" --access "${{ inputs.access }}" --tag "${{ inputs.tag }}"

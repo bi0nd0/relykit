@@ -12,7 +12,7 @@ export default createConfigForNuxt({
     '**/.nuxt/**',
     '**/.output/**',
     '**/node_modules/**',
-    '.artifacts/**',
+    'release-artifacts/**',
   ],
   rules: {
     'no-console': ['warn', { allow: ['warn', 'error'] }],

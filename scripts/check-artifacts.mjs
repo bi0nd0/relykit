@@ -10,15 +10,17 @@ const expectedFilenames = manifests.map((manifest) => (
 ))
 
 for (const filename of expectedFilenames) {
-  const path = `.artifacts/${filename}`
+  const path = `release-artifacts/${filename}`
   if (!existsSync(path)) {
     throw new Error(`Expected release artifact was not written to ${path}.`)
   }
 }
 
-const actualFilenames = readdirSync('.artifacts').filter((filename) => filename.endsWith('.tgz')).sort()
+const actualFilenames = readdirSync('release-artifacts')
+  .filter((filename) => filename.endsWith('.tgz'))
+  .sort()
 if (actualFilenames.join('\n') !== expectedFilenames.sort().join('\n')) {
   throw new Error(`Unexpected release artifacts: ${actualFilenames.join(', ') || 'none'}.`)
 }
 
-process.stdout.write('Release artifacts are present in the repository .artifacts directory.\n')
+process.stdout.write('Release artifacts are present in the repository release-artifacts directory.\n')

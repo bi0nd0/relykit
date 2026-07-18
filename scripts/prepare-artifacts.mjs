@@ -1,4 +1,4 @@
 import { mkdirSync, rmSync } from 'node:fs'
 
-rmSync('.artifacts', { force: true, recursive: true })
-mkdirSync('.artifacts', { recursive: true })
+rmSync('release-artifacts', { force: true, recursive: true })
+mkdirSync('release-artifacts', { recursive: true })

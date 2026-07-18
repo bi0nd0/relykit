@@ -22,7 +22,7 @@ The repository owner performs npm sign-in, organization/scope creation, maintain
 1. Coordinate both package versions and keep `@relykit/nuxt`'s `@relykit/oidc` dependency exact.
 2. Run the local gate in [testing.md](testing.md).
 3. Run `npm run check:release -- <version>`.
-4. Run `npm run pack:packages`; inspect `.artifacts/` and record SHA-256 checksums.
+4. Run `npm run pack:packages`; inspect `release-artifacts/` and record SHA-256 checksums.
 5. Install both tarballs in a clean Nuxt consumer and build it without workspace resolution.
 
 ## Bootstrap and trusted publishing
