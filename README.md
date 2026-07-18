@@ -2,7 +2,7 @@
 
 RelyKit is a white-label, provider-neutral OpenID Connect toolkit for relying applications. It handles authentication plumbing; your application keeps ownership of users, account status, roles, permissions, pages, wording, and branding.
 
-> **Release status:** private prerelease development. The npm packages have not been published. Their license and public visibility remain owner approval gates.
+> **Release status:** prerelease development. The npm packages have not been published. RelyKit is MIT-licensed and its scoped packages are configured for public access.
 
 ## Packages
 
@@ -137,7 +137,7 @@ Read [architecture](docs/architecture.md), [configuration](docs/configuration.md
 
 ## Compatibility
 
-The prerelease validation matrix is Node.js 22.18 through 26, npm 10 through 11, and Nuxt 4.4. The public support promise is not final until the first release gate is approved.
+The supported prerelease range is Node.js >=22.18 and <27, npm >=10 and <12, and Nuxt >=4.4 and <5. CI validates Node.js 22.18, 24, and 26 with the pinned Nuxt fixture.
 
 ## Development
 
@@ -149,4 +149,4 @@ npm run build --workspace @relykit/example-nuxt
 npm audit --omit=dev
 ```
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) and [docs/releasing.md](docs/releasing.md). Publication and repository visibility changes require explicit owner action.
+See [CONTRIBUTING.md](CONTRIBUTING.md), the [MIT license](LICENSE), and [docs/releasing.md](docs/releasing.md). Publication remains an explicit owner action.

@@ -2,15 +2,16 @@
 
 RelyKit uses one fixed version for `@relykit/oidc` and `@relykit/nuxt`. The Nuxt package depends on that exact OIDC version. Release a prerelease before the first stable version.
 
-## Current publication blockers
+## Approved release profile
 
-- The repository is private.
-- Both package manifests are `UNLICENSED` and no `LICENSE` file exists.
-- The owner has not yet confirmed public versus restricted npm access.
-- Ownership of the `@relykit` npm scope has not been verified.
-- The security contact, maintainer list, and final Node/Nuxt support promise need owner confirmation.
+- License: MIT.
+- npm access: public scoped packages.
+- Repository: public before provenance-backed publication.
+- Maintainer and npm organization owner: `bi0nd0`.
+- Security contact: GitHub private vulnerability reporting.
+- Supported prerelease range: Node.js >=22.18 and <27, npm >=10 and <12, and Nuxt >=4.4 and <5.
 
-`npm run check:release -- <version>` intentionally fails until the license is selected and package metadata is updated.
+The remaining publication gate is the owner's interactive bootstrap publish. No stable package may be released before the registry-installed prerelease and Rent Helper smoke pass.
 
 ## Owner responsibilities
 
@@ -18,14 +19,11 @@ The repository owner performs npm sign-in, organization/scope creation, maintain
 
 ## Prerelease preparation
 
-1. Select the license and add its canonical `LICENSE` text. Replace `UNLICENSED` in both package manifests.
-2. Confirm whether npm access is `public` or `restricted`; for ordinary open installation, use public scoped packages.
-3. Confirm the supported Node/Nuxt matrix, security contact, and maintainers.
-4. Set both package versions to `0.1.0-beta.1` and set `@relykit/nuxt`'s `@relykit/oidc` dependency to exactly `0.1.0-beta.1`.
-5. Run the local gate in [testing.md](testing.md).
-6. Run `npm run check:release -- 0.1.0-beta.1`.
-7. Run `npm run pack:packages`; inspect `.artifacts/` and record SHA-256 checksums.
-8. Install both tarballs in a clean Nuxt consumer and build it without workspace resolution.
+1. Coordinate both package versions and keep `@relykit/nuxt`'s `@relykit/oidc` dependency exact.
+2. Run the local gate in [testing.md](testing.md).
+3. Run `npm run check:release -- <version>`.
+4. Run `npm run pack:packages`; inspect `.artifacts/` and record SHA-256 checksums.
+5. Install both tarballs in a clean Nuxt consumer and build it without workspace resolution.
 
 ## Bootstrap and trusted publishing
 
@@ -56,16 +54,20 @@ npm trust github @relykit/nuxt --repo bi0nd0/relykit --file release.yml --env np
 
 These commands require the owner's interactive npm authentication and 2FA. The trust form is not validated when saved, so verify every case-sensitive field before the first workflow publication.
 
-## Publication commands
+## Bootstrap publication commands
 
-Exact owner-run npm website fields and terminal commands are finalized at the publication handoff after scope ownership, access, and license decisions are known. The bootstrap must not use `latest`; the trusted beta uses `next`:
+The bootstrap must not use `latest`. From a clean checkout of the reviewed release commit, first verify the npm identity and frozen artifacts, then publish the exact tarballs:
 
 ```bash
-npm publish --access <public-or-restricted> --tag bootstrap <reviewed-beta.0-oidc-tarball>
-npm publish --access <public-or-restricted> --tag bootstrap <reviewed-beta.0-nuxt-tarball>
+npm whoami
+shasum -a 256 .artifacts/relykit-oidc-0.1.0-beta.0.tgz .artifacts/relykit-nuxt-0.1.0-beta.0.tgz
+npm publish --access public --tag bootstrap .artifacts/relykit-oidc-0.1.0-beta.0.tgz
+npm publish --access public --tag bootstrap .artifacts/relykit-nuxt-0.1.0-beta.0.tgz
 ```
 
-These examples are not authorization to publish and must not be run until the frozen artifacts and access choice are approved.
+The expected identity is `bi0nd0`. npm may request the account's 2FA code during each publish; enter it only in npm's terminal prompt. Stop if the displayed package name, version, access, or file list differs from the reviewed artifact. These commands create only the `bootstrap` tag and do not create or move `latest`.
+
+After both package pages exist, configure the trusted publishers exactly as shown above. The coordinated `0.1.0-beta.1` release is then dispatched through GitHub Actions with `tag=next`, `access=public`, and `dry_run=false`; the owner approves the protected `npm` environment when prompted.
 
 ## Recovery
 

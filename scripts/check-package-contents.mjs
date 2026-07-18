@@ -3,7 +3,7 @@ import { readFileSync, readdirSync, statSync } from 'node:fs'
 import { join, relative } from 'node:path'
 
 const packages = ['@relykit/oidc', '@relykit/nuxt']
-const allowedTopLevel = new Set(['LICENSE.md', 'README.md', 'dist', 'package.json'])
+const allowedTopLevel = new Set(['LICENSE', 'README.md', 'dist', 'package.json'])
 const forbidden = [
   /3bees/i,
   /rent helper/i,
@@ -27,6 +27,9 @@ for (const workspace of packages) {
   ], { encoding: 'utf8' })
   const [result] = JSON.parse(output)
   if (!result?.files?.length) throw new Error(`${workspace} produced no package files.`)
+  if (!result.files.some((file) => file.path === 'LICENSE')) {
+    throw new Error(`${workspace} would publish without its MIT license text.`)
+  }
   for (const file of result.files) {
     const topLevel = file.path.split('/')[0]
     if (!allowedTopLevel.has(topLevel)) {

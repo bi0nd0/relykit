@@ -18,6 +18,7 @@
     "url": "git+https://github.com/bi0nd0/relykit.git",
     "directory": "packages/oidc"
   },
+  "author": "bi0nd0",
   "type": "module",
   "sideEffects": false,
   "files": [
@@ -56,5 +57,8 @@
   "engines": {
     "node": ">=22.18 <27"
   },
-  "license": "UNLICENSED"
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  }
 }

@@ -12,7 +12,7 @@ npm run build --workspace @relykit/example-nuxt
 npm audit --omit=dev
 ```
 
-`npm run check` covers runtime compatibility, lint, strict package typechecks, unit tests, and package builds. `check:packages` performs npm dry-run inventories and scans publishable output for provider/application semantics and local paths.
+`npm run check` covers runtime compatibility, lint, strict package typechecks, unit tests, and package builds. `check:packages` requires the MIT license in each tarball, performs npm dry-run inventories, and scans publishable output for provider/application semantics and local paths.
 
 ## Test ownership
 
