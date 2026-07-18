@@ -6,4 +6,4 @@ The package implements discovery, Authorization Code flow with S256 PKCE, state 
 
 Provider-specific claims are handled by an application-supplied `IdentityProfileStrategy`. Application users, roles, permissions, and persistence remain outside this package.
 
-See the repository README and `docs/configuration.md` for setup and security requirements.
+See the [repository README](https://github.com/bi0nd0/relykit#readme) and [configuration guide](https://github.com/bi0nd0/relykit/blob/main/docs/configuration.md) for setup and security requirements.

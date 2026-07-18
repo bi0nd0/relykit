@@ -3,17 +3,6 @@
   "version": "0.1.0-beta.0",
   "description": "White-label Nuxt 4 adapter for OpenID Connect authentication and application-owned authorization.",
   "keywords": [
-    "nuxt",
-    "nitro",
-    "openid-connect",
-    "authentication"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/bi0nd0/relykit.git",
-    "directory": "packages/nuxt"
-  },
-  "keywords": [
     "authentication",
     "nuxt",
     "nitro",
@@ -76,10 +65,7 @@
     "vitest": "4.1.10"
   },
   "engines": {
-    "node": ">=22.14 <27"
+    "node": ">=22.18 <27"
   },
-  "license": "UNLICENSED",
-  "publishConfig": {
-    "access": "restricted"
-  }
+  "license": "UNLICENSED"
 }

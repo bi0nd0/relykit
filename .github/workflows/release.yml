@@ -1,0 +1,64 @@
+name: Release packages
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Exact coordinated package version
+        required: true
+        type: string
+      tag:
+        description: npm dist-tag
+        required: true
+        default: next
+        type: choice
+        options:
+          - next
+          - latest
+      access:
+        description: npm package visibility selected at the owner gate
+        required: true
+        default: public
+        type: choice
+        options:
+          - public
+          - restricted
+      dry_run:
+        description: Build and inspect artifacts without publishing
+        required: true
+        default: true
+        type: boolean
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    environment: npm
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24.x'
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+      - run: npm install --global npm@11.12.1
+      - run: npm ci
+      - run: npm run check
+      - run: npm run check:packages
+      - run: npm audit --omit=dev
+      - run: npm run check:release -- "${{ inputs.version }}"
+      - run: npm run pack:packages
+      - uses: actions/upload-artifact@v4
+        with:
+          name: relykit-${{ inputs.version }}
+          path: .artifacts/*.tgz
+          if-no-files-found: error
+      - name: Publish OIDC package
+        if: ${{ inputs.dry_run == false }}
+        run: npm publish ".artifacts/relykit-oidc-${{ inputs.version }}.tgz" --access "${{ inputs.access }}" --tag "${{ inputs.tag }}"
+      - name: Publish Nuxt package
+        if: ${{ inputs.dry_run == false }}
+        run: npm publish ".artifacts/relykit-nuxt-${{ inputs.version }}.tgz" --access "${{ inputs.access }}" --tag "${{ inputs.tag }}"

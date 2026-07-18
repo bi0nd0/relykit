@@ -77,7 +77,7 @@ Read [architecture](docs/architecture.md), [configuration](docs/configuration.md
 
 ## Compatibility
 
-The prerelease validation matrix is Node.js 22.14 through 26, npm 10 through 11, and Nuxt 4.4. The public support promise is not final until the first release gate is approved.
+The prerelease validation matrix is Node.js 22.18 through 26, npm 10 through 11, and Nuxt 4.4. The public support promise is not final until the first release gate is approved.
 
 ## Development
 

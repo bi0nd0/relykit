@@ -3,17 +3,6 @@
   "version": "0.1.0-beta.0",
   "description": "Provider-neutral, framework-independent OpenID Connect primitives for relying applications.",
   "keywords": [
-    "openid-connect",
-    "oauth2",
-    "authentication",
-    "relying-party"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/bi0nd0/relykit.git",
-    "directory": "packages/oidc"
-  },
-  "keywords": [
     "authentication",
     "oauth2",
     "oidc",
@@ -65,10 +54,7 @@
     "vitest": "4.1.10"
   },
   "engines": {
-    "node": ">=22.14 <27"
+    "node": ">=22.18 <27"
   },
-  "license": "UNLICENSED",
-  "publishConfig": {
-    "access": "restricted"
-  }
+  "license": "UNLICENSED"
 }

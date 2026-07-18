@@ -13,8 +13,8 @@ for (const manifest of manifests) {
   if (manifest.version !== expected) {
     throw new Error(`${manifest.name} is ${manifest.version}; expected ${expected}.`)
   }
-  if (!['UNLICENSED', 'SEE LICENSE IN LICENSE.md'].includes(manifest.license)) {
-    throw new Error(`${manifest.name} must declare the approved proprietary license metadata.`)
+  if (manifest.license === 'UNLICENSED') {
+    throw new Error(`${manifest.name} is not publication-ready until the owner selects a license.`)
   }
 }
 if (manifests[1].dependencies['@relykit/oidc'] !== expected) {
