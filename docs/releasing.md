@@ -11,7 +11,7 @@ RelyKit uses one fixed version for `@relykit/oidc` and `@relykit/nuxt`. The Nuxt
 - Security contact: GitHub private vulnerability reporting.
 - Supported prerelease range: Node.js >=22.18 and <27, npm >=10 and <12, and Nuxt >=4.4 and <5.
 
-The interactive `0.1.0-beta.0` bootstrap is published. The remaining prerelease gates are trusted-publisher configuration, the provenance-backed `0.1.0-beta.1` release, and the registry-installed Rent Helper smoke pass. No stable package may be released before those gates pass.
+The interactive `0.1.0-beta.0` bootstrap is published and both npm packages trust the exact GitHub workflow described below. The remaining prerelease gates are the provenance-backed `0.1.0-beta.1` release and the registry-installed Rent Helper smoke pass. No stable package may be released before those gates pass.
 
 ## Owner responsibilities
 
@@ -35,7 +35,7 @@ The GitHub environment should require owner approval. Do not add a long-lived np
 
 Trusted publishing currently requires npm 11.5.1 or later and Node 22.14 or later. Provenance is generated automatically only when the trusted workflow publishes a public package from a public repository. If the repository remains private, trusted publishing can still remove the long-lived token, but npm will not create provenance. Public GitHub visibility is therefore a separate explicit owner gate before the provenance-backed beta.
 
-After the bootstrap exists, the owner can configure each package through npmjs.com (`Package settings` → `Trusted Publisher` → `GitHub Actions`) with:
+Each package is configured through npmjs.com (`Package settings` → `Trusted Publisher` → `GitHub Actions`) with:
 
 | Field | Value |
 |---|---|
@@ -45,14 +45,7 @@ After the bootstrap exists, the owner can configure each package through npmjs.c
 | Environment | `npm` |
 | Allowed action | `npm publish` |
 
-The npm 11 CLI equivalent is:
-
-```bash
-npm trust github @relykit/oidc --repo bi0nd0/relykit --file release.yml --env npm --allow-publish
-npm trust github @relykit/nuxt --repo bi0nd0/relykit --file release.yml --env npm --allow-publish
-```
-
-These commands require the owner's interactive npm authentication and 2FA. The trust form is not validated when saved, so verify every case-sensitive field before the first workflow publication.
+npm 11.12.1 does not support the newer `--allow-publish` CLI flag, and its supported trust command returned HTTP 400 after authentication during this bootstrap. The npm website is the verified authority for this release. Both package settings pages show `bi0nd0/relykit`, `release.yml`, environment `npm`, and permission `npm publish`.
 
 ## Bootstrap publication record
 
@@ -65,7 +58,7 @@ The bootstrap was published from commit `2f96174` after verifying npm identity `
 
 Registry downloads match both frozen checksums. npm retained an initial `latest` tag in addition to `bootstrap` and rejected its removal with HTTP 400 while `0.1.0-beta.0` is the only published version. Do not unpublish the version to work around that registry behavior. Consumers must install the exact prerelease version; no future prerelease workflow may select or move `latest`.
 
-After both package pages exist, configure the trusted publishers exactly as shown above. The coordinated `0.1.0-beta.1` release is then dispatched through GitHub Actions with `tag=next`, `access=public`, and `dry_run=false`; the owner approves the protected `npm` environment when prompted.
+The coordinated `0.1.0-beta.1` release is dispatched through GitHub Actions with `tag=next`, `access=public`, and `dry_run=false`; the owner approves the protected `npm` environment when prompted.
 
 ## Recovery
 

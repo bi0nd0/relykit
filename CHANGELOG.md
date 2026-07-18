@@ -2,6 +2,12 @@
 
 All notable changes are documented here. RelyKit follows coordinated package versions.
 
+## 0.1.0-beta.1 - Unreleased
+
+- Added provenance-capable GitHub Actions publishing through package-scoped npm trusted publishers.
+- Revalidated coordinated package contents and the exact Nuxt-to-OIDC dependency after the npm bootstrap.
+- Corrected the owner release runbook against the npm 11.12.1 CLI and live registry behavior.
+
 ## 0.1.0-beta.0 - 2026-07-17
 
 - Extracted the relying-application OIDC and Nuxt behavior into an independent two-package workspace.
