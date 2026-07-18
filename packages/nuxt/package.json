@@ -46,8 +46,7 @@
     "pretypecheck": "npm run build --workspace @relykit/oidc",
     "typecheck": "tsc -p tsconfig.build.json --noEmit",
     "pretest": "npm run build --workspace @relykit/oidc",
-    "test": "vitest run --root ../.. packages/nuxt/test",
-    "pack": "npm pack --cache ../../.npm-cache --pack-destination ../../.artifacts"
+    "test": "vitest run --root ../.. packages/nuxt/test"
   },
   "dependencies": {
     "@nuxt/kit": "4.4.8",

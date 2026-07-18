@@ -42,8 +42,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc -p tsconfig.build.json --noEmit",
-    "test": "vitest run --root ../.. packages/oidc/test",
-    "pack": "npm pack --cache ../../.npm-cache --pack-destination ../../.artifacts"
+    "test": "vitest run --root ../.. packages/oidc/test"
   },
   "dependencies": {
     "jose": "6.2.3",
