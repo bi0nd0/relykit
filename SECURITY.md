@@ -1,6 +1,6 @@
 # Security policy
 
-RelyKit is prerelease software and has no published supported version yet.
+RelyKit `0.1.x` is the supported stable release line.
 
 ## Reporting a vulnerability
 
@@ -14,8 +14,13 @@ Include the affected version or commit, impact, minimal reproduction, and any kn
 
 RelyKit validates OIDC authentication and exposes application authorization hooks. It does not secure an application whose principal adapter grants access incorrectly, whose independently authenticated endpoints skip their own verification, or whose deployment exposes server runtime secrets.
 
-Security-sensitive changes require tests for failure behavior, package-content review, dependency audit, and a prerelease consumer smoke before stable publication.
+Security-sensitive changes require tests for failure behavior, package-content review, dependency audit, a clean packaged consumer, and an affected-application smoke before publication.
 
 ## Supported versions
 
-RelyKit has no supported published version yet. During the prerelease period, security fixes target the newest prerelease only. This section will be updated before the first stable release.
+| Version | Supported |
+|---|---|
+| `0.1.x` | Yes |
+| `0.1.0-beta.x` | No; upgrade to stable |
+
+Security fixes target the newest supported patch release. A correction to either package releases both packages at the same coordinated version.

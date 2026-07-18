@@ -1,6 +1,6 @@
 # Contributing
 
-RelyKit is private during prerelease development. Discuss public contributions after repository visibility and licensing are approved.
+RelyKit is a public MIT-licensed repository. Open an issue before a large public-contract change so its scope, compatibility impact, and security boundary can be agreed before implementation.
 
 ## Development contract
 

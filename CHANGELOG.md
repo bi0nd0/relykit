@@ -2,7 +2,13 @@
 
 All notable changes are documented here. RelyKit follows coordinated package versions.
 
-## 0.1.0-beta.1 - Unreleased
+## 0.1.0 - 2026-07-18
+
+- Published the first stable coordinated OIDC and Nuxt package line without changing the public API proven in `0.1.0-beta.1`.
+- Completed registry-package, clean-consumer, Docker, migration, and full Rent Helper browser authentication/authorization gates.
+- Reconciled package, security, contribution, migration, and release documentation with the public stable support policy.
+
+## 0.1.0-beta.1 - 2026-07-17
 
 - Added provenance-capable GitHub Actions publishing through package-scoped npm trusted publishers.
 - Revalidated coordinated package contents and the exact Nuxt-to-OIDC dependency after the npm bootstrap.

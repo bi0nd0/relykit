@@ -30,4 +30,4 @@ Cookie names and key derivation changed. Existing sessions and in-progress login
 
 ## Authorization
 
-Application principal storage, one-time binding rules, active status, roles, and permissions remain in the consuming application. Preserve the existing principal adapter tests before replacing vendored tarballs. Then re-run anonymous redirect, callback, active access, unbound denial, suspension, logout, 401/403/503, and safe-return-path smoke cases against the exact npm prerelease.
+Application principal storage, one-time binding rules, active status, roles, and permissions remain in the consuming application. Preserve the existing principal adapter tests before replacing vendored tarballs. Then re-run anonymous redirect, callback, active access, unbound denial, suspension, logout, 401/403/503, and safe-return-path smoke cases against the exact npm version selected for deployment.

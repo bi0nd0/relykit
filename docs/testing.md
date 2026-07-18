@@ -37,4 +37,4 @@ The fixture smoke must prove:
 7. the post-logout protected API returns 401;
 8. public HTML, headers, redirects, cookies, and normal-flow output contain no package/provider/application branding not supplied by the fixture.
 
-Registry releases add a clean consumer install from the exact tarballs and, after prerelease publication, the exact npm versions.
+Registry releases add a clean consumer install from the exact tarballs and exact npm versions. Stable candidates also require a real relying application to repeat callback, principal reload, suspension/denial, logout, and replay checks before `latest` moves.

@@ -2,7 +2,7 @@
 
 RelyKit is a white-label, provider-neutral OpenID Connect toolkit for relying applications. It handles authentication plumbing; your application keeps ownership of users, account status, roles, permissions, pages, wording, and branding.
 
-> **Release status:** `0.1.0-beta.0` is published as a bootstrap prerelease. It is not a stable release. RelyKit is MIT-licensed and its scoped packages are public.
+> **Release status:** `0.1.0` is the first stable release. It preserves the API proven by the provenance-backed `0.1.0-beta.1` release and its real Rent Helper integration. RelyKit is MIT-licensed and its scoped packages are public.
 
 ## Packages
 
@@ -25,10 +25,10 @@ Callback and logout URLs are exact-match values. Register separate clients for l
 
 ### 2. Install and configure RelyKit
 
-Install both coordinated packages at the same exact prerelease version:
+Install both coordinated packages at the same exact stable version:
 
 ```bash
-npm install @relykit/oidc@0.1.0-beta.0 @relykit/nuxt@0.1.0-beta.0
+npm install --save-exact @relykit/oidc@0.1.0 @relykit/nuxt@0.1.0
 ```
 
 Configure the module and server-only runtime values:
@@ -137,7 +137,7 @@ Read [architecture](docs/architecture.md), [configuration](docs/configuration.md
 
 ## Compatibility
 
-The supported prerelease range is Node.js >=22.18 and <27, npm >=10 and <12, and Nuxt >=4.4 and <5. CI validates Node.js 22.18, 24, and 26 with the pinned Nuxt fixture.
+The supported stable range is Node.js >=22.18 and <27, npm >=10 and <12, and Nuxt >=4.4 and <5. CI validates Node.js 22.18, 24, and 26 with the pinned Nuxt fixture.
 
 ## Development
 
