@@ -1,0 +1,74 @@
+{
+  "name": "@relykit/oidc",
+  "version": "0.1.0-beta.0",
+  "description": "Provider-neutral, framework-independent OpenID Connect primitives for relying applications.",
+  "keywords": [
+    "openid-connect",
+    "oauth2",
+    "authentication",
+    "relying-party"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bi0nd0/relykit.git",
+    "directory": "packages/oidc"
+  },
+  "keywords": [
+    "authentication",
+    "oauth2",
+    "oidc",
+    "openid-connect",
+    "relying-party"
+  ],
+  "homepage": "https://github.com/bi0nd0/relykit#readme",
+  "bugs": {
+    "url": "https://github.com/bi0nd0/relykit/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bi0nd0/relykit.git",
+    "directory": "packages/oidc"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./access": {
+      "types": "./dist/access.d.ts",
+      "import": "./dist/access.js"
+    },
+    "./test-helpers": {
+      "types": "./dist/test-helpers.d.ts",
+      "import": "./dist/test-helpers.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.build.json --noEmit",
+    "test": "vitest run --root ../.. packages/oidc/test",
+    "pack": "npm pack --cache ../../.npm-cache --pack-destination ../../.artifacts"
+  },
+  "dependencies": {
+    "jose": "6.2.3",
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "26.1.1",
+    "typescript": "5.9.3",
+    "vitest": "4.1.10"
+  },
+  "engines": {
+    "node": ">=22.14 <27"
+  },
+  "license": "UNLICENSED",
+  "publishConfig": {
+    "access": "restricted"
+  }
+}

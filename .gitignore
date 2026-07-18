@@ -1,0 +1,9 @@
+node_modules/
+packages/*/dist/
+**/.nuxt/
+**/.output/
+.artifacts/
+.npm-cache/
+coverage/
+.DS_Store
+npm-debug.log*

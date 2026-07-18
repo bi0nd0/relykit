@@ -1,0 +1,85 @@
+{
+  "name": "@relykit/nuxt",
+  "version": "0.1.0-beta.0",
+  "description": "White-label Nuxt 4 adapter for OpenID Connect authentication and application-owned authorization.",
+  "keywords": [
+    "nuxt",
+    "nitro",
+    "openid-connect",
+    "authentication"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bi0nd0/relykit.git",
+    "directory": "packages/nuxt"
+  },
+  "keywords": [
+    "authentication",
+    "nuxt",
+    "nitro",
+    "oauth2",
+    "oidc",
+    "openid-connect"
+  ],
+  "homepage": "https://github.com/bi0nd0/relykit#readme",
+  "bugs": {
+    "url": "https://github.com/bi0nd0/relykit/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bi0nd0/relykit.git",
+    "directory": "packages/nuxt"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/module.d.ts",
+      "import": "./dist/module.js"
+    },
+    "./types": {
+      "types": "./dist/runtime/types.d.ts",
+      "import": "./dist/runtime/types.js"
+    },
+    "./server": {
+      "types": "./dist/runtime/server/access.d.ts",
+      "import": "./dist/runtime/server/access.js"
+    }
+  },
+  "scripts": {
+    "prebuild": "npm run build --workspace @relykit/oidc",
+    "build": "tsc -p tsconfig.build.json",
+    "pretypecheck": "npm run build --workspace @relykit/oidc",
+    "typecheck": "tsc -p tsconfig.build.json --noEmit",
+    "pretest": "npm run build --workspace @relykit/oidc",
+    "test": "vitest run --root ../.. packages/nuxt/test",
+    "pack": "npm pack --cache ../../.npm-cache --pack-destination ../../.artifacts"
+  },
+  "dependencies": {
+    "@nuxt/kit": "4.4.8",
+    "@relykit/oidc": "0.1.0-beta.0",
+    "h3": "1.15.11",
+    "nitropack": "2.13.4",
+    "zod": "4.4.3"
+  },
+  "peerDependencies": {
+    "nuxt": ">=4.4.0 <5"
+  },
+  "devDependencies": {
+    "@types/node": "26.1.1",
+    "nuxt": "4.4.8",
+    "typescript": "5.9.3",
+    "vitest": "4.1.10"
+  },
+  "engines": {
+    "node": ">=22.14 <27"
+  },
+  "license": "UNLICENSED",
+  "publishConfig": {
+    "access": "restricted"
+  }
+}
