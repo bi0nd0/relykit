@@ -13,6 +13,9 @@ describe('Nuxt module options', () => {
       publicApiPaths: ['/api/health'],
       sessionCookieName: 'auth-session',
       flowCookieName: 'auth-flow',
+      logoutCookieName: 'auth-logout',
+      logoutCallbackPath: '/api/auth/logout/callback',
+      logoutTransitionTitle: 'Finishing sign-out…',
     })
   })
 
@@ -49,6 +52,11 @@ describe('Nuxt module options', () => {
       principalAdapter: './server/principal-adapter.ts',
       sessionCookieName: 'same',
       flowCookieName: 'same',
+    })).toThrow(/different/)
+    expect(() => normalizeModuleOptions({
+      principalAdapter: './server/principal-adapter.ts',
+      flowCookieName: 'same',
+      logoutCookieName: 'same',
     })).toThrow(/different/)
     expect(() => normalizeModuleOptions({
       principalAdapter: './server/principal-adapter.ts',

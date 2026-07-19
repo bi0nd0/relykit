@@ -11,12 +11,17 @@ export type RelyKitNuxtModuleOptions = {
   loginPath?: string
   callbackPath?: string
   logoutPath?: string
+  logoutCallbackPath?: string
   accessPath?: string
   protectedApiPrefixes?: string[]
   publicApiPaths?: string[]
   independentlyAuthenticatedApiPaths?: string[]
   sessionCookieName?: string
   flowCookieName?: string
+  logoutCookieName?: string
+  logoutTransitionTitle?: string
+  logoutTransitionMessage?: string
+  logoutTransitionAction?: string
   clientStateKey?: string
 }
 
@@ -32,12 +37,17 @@ const DEFAULTS: Omit<NormalizedRelyKitNuxtModuleOptions, 'principalAdapter'> = {
   loginPath: '/api/auth/login',
   callbackPath: '/api/auth/callback',
   logoutPath: '/api/auth/logout',
+  logoutCallbackPath: '/api/auth/logout/callback',
   accessPath: '/api/auth/access',
   protectedApiPrefixes: ['/api'],
   publicApiPaths: ['/api/health'],
   independentlyAuthenticatedApiPaths: [],
   sessionCookieName: 'auth-session',
   flowCookieName: 'auth-flow',
+  logoutCookieName: 'auth-logout',
+  logoutTransitionTitle: 'Finishing sign-out…',
+  logoutTransitionMessage: 'Continue if this page does not move automatically.',
+  logoutTransitionAction: 'Continue signing out',
   clientStateKey: 'auth-session-state',
 }
 
@@ -79,6 +89,14 @@ function stateKey(value: string) {
   return normalized
 }
 
+function transitionCopy(value: string, label: string) {
+  const normalized = value.trim()
+  if (!normalized || normalized.length > 200) {
+    throw new Error(`${label} must contain between 1 and 200 characters.`)
+  }
+  return normalized
+}
+
 export function normalizeModuleOptions(options: RelyKitNuxtModuleOptions): NormalizedRelyKitNuxtModuleOptions {
   if (!options.principalAdapter?.trim()) {
     throw new Error('@relykit/nuxt requires a principalAdapter module path.')
@@ -95,6 +113,7 @@ export function normalizeModuleOptions(options: RelyKitNuxtModuleOptions): Norma
     loginPath: exactApplicationPath(options.loginPath ?? DEFAULTS.loginPath, 'loginPath'),
     callbackPath: exactApplicationPath(options.callbackPath ?? DEFAULTS.callbackPath, 'callbackPath'),
     logoutPath: exactApplicationPath(options.logoutPath ?? DEFAULTS.logoutPath, 'logoutPath'),
+    logoutCallbackPath: exactApplicationPath(options.logoutCallbackPath ?? DEFAULTS.logoutCallbackPath, 'logoutCallbackPath'),
     accessPath: exactApplicationPath(options.accessPath ?? DEFAULTS.accessPath, 'accessPath'),
     protectedApiPrefixes: normalizedPaths(options.protectedApiPrefixes ?? DEFAULTS.protectedApiPrefixes, 'protectedApiPrefixes'),
     publicApiPaths: normalizedPaths(options.publicApiPaths ?? DEFAULTS.publicApiPaths, 'publicApiPaths'),
@@ -104,15 +123,26 @@ export function normalizeModuleOptions(options: RelyKitNuxtModuleOptions): Norma
     ),
     sessionCookieName: cookieName(options.sessionCookieName ?? DEFAULTS.sessionCookieName, 'sessionCookieName'),
     flowCookieName: cookieName(options.flowCookieName ?? DEFAULTS.flowCookieName, 'flowCookieName'),
+    logoutCookieName: cookieName(options.logoutCookieName ?? DEFAULTS.logoutCookieName, 'logoutCookieName'),
+    logoutTransitionTitle: transitionCopy(options.logoutTransitionTitle ?? DEFAULTS.logoutTransitionTitle, 'logoutTransitionTitle'),
+    logoutTransitionMessage: transitionCopy(options.logoutTransitionMessage ?? DEFAULTS.logoutTransitionMessage, 'logoutTransitionMessage'),
+    logoutTransitionAction: transitionCopy(options.logoutTransitionAction ?? DEFAULTS.logoutTransitionAction, 'logoutTransitionAction'),
     clientStateKey: stateKey(options.clientStateKey ?? DEFAULTS.clientStateKey),
   }
 
-  const authRoutes = [normalized.loginPath, normalized.callbackPath, normalized.logoutPath, normalized.accessPath]
+  const authRoutes = [
+    normalized.loginPath,
+    normalized.callbackPath,
+    normalized.logoutPath,
+    normalized.logoutCallbackPath,
+    normalized.accessPath,
+  ]
   if (new Set(authRoutes).size !== authRoutes.length) {
     throw new Error('Authentication route paths must be unique.')
   }
-  if (normalized.sessionCookieName === normalized.flowCookieName) {
-    throw new Error('sessionCookieName and flowCookieName must be different.')
+  const cookieNames = [normalized.sessionCookieName, normalized.flowCookieName, normalized.logoutCookieName]
+  if (new Set(cookieNames).size !== cookieNames.length) {
+    throw new Error('Authentication cookie names must be different.')
   }
   return normalized
 }

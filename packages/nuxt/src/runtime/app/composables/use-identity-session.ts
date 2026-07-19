@@ -56,11 +56,16 @@ export function useAuthSession() {
   }
 
   async function logout() {
-    const response = await useRequestFetch()<{ logoutUrl: string | null }>(config.logoutPath, { method: 'POST' })
     session.value = null
     ready.value = true
-    if (response.logoutUrl) {
-      return navigateTo(response.logoutUrl, { external: true })
+    if (import.meta.client) {
+      const form = document.createElement('form')
+      form.method = 'POST'
+      form.action = config.logoutPath
+      form.hidden = true
+      document.body.append(form)
+      form.submit()
+      return
     }
     return navigateTo(config.loginPage)
   }

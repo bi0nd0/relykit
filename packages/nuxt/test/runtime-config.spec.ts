@@ -7,7 +7,7 @@ const valid = {
   clientSecret: 'client-secret',
   clientAuthenticationMethod: 'client_secret_basic',
   redirectUri: 'https://app.example.com/api/auth/callback',
-  postLogoutRedirectUri: 'https://app.example.com/',
+  postLogoutRedirectUri: 'https://app.example.com/api/auth/logout/callback',
   scopes: 'openid profile email',
   idTokenAlgorithms: 'RS256 ES256 EdDSA',
   requestTimeoutMs: '5000',
@@ -15,6 +15,7 @@ const valid = {
   sessionMaxAgeSeconds: '28800',
   sessionCookieName: 'example-session',
   flowCookieName: 'example-flow',
+  logoutCookieName: 'example-logout',
   secureCookies: 'auto',
 }
 
@@ -38,6 +39,7 @@ describe('Nuxt authentication runtime configuration', () => {
       sessionMaxAgeSeconds: 28_800,
       sessionCookieName: 'example-session',
       flowCookieName: 'example-flow',
+      logoutCookieName: 'example-logout',
       secureCookies: true,
     })
   })
@@ -63,10 +65,15 @@ describe('Nuxt authentication runtime configuration', () => {
   it('fails closed for missing credentials, weak sessions, and insecure production cookies', () => {
     expect(() => parseAuthRuntimeConfig({ ...valid, clientSecret: '' })).toThrow()
     expect(() => parseAuthRuntimeConfig({ ...valid, sessionPassword: 'too-short' })).toThrow()
+    expect(() => parseAuthRuntimeConfig({
+      ...valid,
+      postLogoutRedirectUri: 'https://other.example.com/api/auth/logout/callback',
+    })).toThrow(/same application origin/)
     process.env.NODE_ENV = 'production'
     expect(() => parseAuthRuntimeConfig({
       ...valid,
       redirectUri: 'http://app.example.com/api/auth/callback',
+      postLogoutRedirectUri: 'http://app.example.com/api/auth/logout/callback',
       secureCookies: false,
     })).toThrow(/Secure cookies/)
   })

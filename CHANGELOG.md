@@ -4,9 +4,11 @@ All notable changes are documented here. RelyKit follows coordinated package ver
 
 ## 0.1.0 - 2026-07-18
 
-- Published the first stable coordinated OIDC and Nuxt package line without changing the public API proven in `0.1.0-beta.1`.
-- Completed registry-package, clean-consumer, Docker, migration, and full Rent Helper browser authentication/authorization gates.
-- Reconciled package, security, contribution, migration, and release documentation with the public stable support policy.
+- Added a structured, provider-neutral RP-Initiated Logout request to `@relykit/oidc` so ID tokens are transported in a form POST instead of a browser URL.
+- Added the complete Nuxt logout lifecycle: separately sealed ID-token evidence, one-time state, same-origin initiation, constrained transition forms, verified callbacks, replay rejection, and explicit provider-failure recovery.
+- Preserved logout evidence after failed or unsolicited callbacks so a relying application can safely retry ending the provider session without silently claiming success.
+- Completed package, clean-consumer, Docker, migration, and real-provider browser authentication, authorization, and logout gates.
+- Reconciled package, architecture, security, migration, and release documentation with the stable support contract.
 
 ## 0.1.0-beta.1 - 2026-07-17
 

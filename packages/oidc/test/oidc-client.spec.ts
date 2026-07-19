@@ -5,6 +5,7 @@ import {
   finishLogin,
   safeReturnPath,
   startLogin,
+  startLogout,
   type IdentityProfileStrategy,
   type OidcClientConfig,
   type OidcFlowError,
@@ -213,5 +214,31 @@ describe('provider-neutral OIDC client', () => {
       },
       fetcher: discoveryFetch(discovery),
     })).rejects.toMatchObject<Partial<OidcFlowError>>({ code: 'invalid_discovery' })
+  })
+
+  it('creates a state-bound form POST logout request without putting the token in the URL', async () => {
+    const result = await startLogout({
+      config,
+      idTokenHint: 'signed-id-token',
+      fetcher: discoveryFetch(),
+    })
+    expect(result).toMatchObject({
+      endpoint: 'https://identity.example.com/oauth2/end-session',
+      method: 'POST',
+      parameters: {
+        client_id: config.clientId,
+        id_token_hint: 'signed-id-token',
+        post_logout_redirect_uri: config.postLogoutRedirectUri,
+      },
+    })
+    expect(result?.state).toBeTruthy()
+    expect(result?.parameters.state).toBe(result?.state)
+    expect(result?.endpoint).not.toContain('signed-id-token')
+  })
+
+  it('returns no logout request when discovery does not advertise an endpoint', async () => {
+    const document = createDiscoveryDocument(config.issuer)
+    delete document.end_session_endpoint
+    await expect(startLogout({ config, fetcher: discoveryFetch(document) })).resolves.toBeNull()
   })
 })

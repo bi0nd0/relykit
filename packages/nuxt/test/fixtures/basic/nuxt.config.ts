@@ -11,7 +11,7 @@ export default defineNuxtConfig({
       clientSecret: 'fixture-client-secret',
       clientAuthenticationMethod: 'client_secret_basic',
       redirectUri: 'http://127.0.0.1:4010/api/auth/callback',
-      postLogoutRedirectUri: 'http://127.0.0.1:4010/login',
+      postLogoutRedirectUri: 'http://127.0.0.1:4010/api/auth/logout/callback',
       scopes: 'openid profile email',
       idTokenAlgorithms: 'RS256 ES256 EdDSA',
       requestTimeoutMs: 1_000,

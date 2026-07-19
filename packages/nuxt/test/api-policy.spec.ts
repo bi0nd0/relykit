@@ -14,6 +14,7 @@ describe('Nuxt server API policy', () => {
     ['/api/auth/login', false],
     ['/api/auth/callback', false],
     ['/api/auth/logout', false],
+    ['/api/auth/logout/callback', false],
     ['/api/auth/access', false],
     ['/api/health', false],
     ['/api/inngest', false],
