@@ -11,7 +11,7 @@ RelyKit uses one fixed version for `@relykit/oidc` and `@relykit/nuxt`. The Nuxt
 - Security contact: GitHub private vulnerability reporting.
 - Supported stable range: Node.js >=22.18 and <27, npm >=10 and <12, and Nuxt >=4.4 and <5.
 
-The interactive `0.1.0-beta.0` bootstrap and provenance-backed `0.1.0-beta.1` release are published. Registry artifacts match retained GitHub artifacts, and Rent Helper passed the exact beta.1 clean-install, build, Docker, migration, authorization, callback, suspension, denial, logout, and replay gates. These completed gates authorize preparation of stable `0.1.0`; publication remains an explicit owner action.
+The interactive `0.1.0-beta.0` bootstrap and provenance-backed `0.1.0-beta.1` release are published. Registry artifacts match retained GitHub artifacts, and Rent Helper passed the beta.1 integration gates. Stable `0.1.0` adds the complete RP-initiated logout contract and therefore requires fresh clean-package plus real IdFabric/Rent Helper evidence; prior beta logout evidence does not authorize publication. Publication remains an explicit owner action.
 
 ## Owner responsibilities
 
@@ -24,6 +24,7 @@ The repository owner performs npm sign-in, organization/scope creation, maintain
 3. Run `npm run check:release -- <version>`.
 4. Run `npm run pack:packages`; inspect `release-artifacts/` and record SHA-256 checksums.
 5. Install both tarballs in a clean Nuxt consumer and build it without workspace resolution.
+6. Run hinted, hintless, invalid, replayed, and unavailable-provider logout against a real conforming provider; inspect browser URLs, transition headers, callback state, and post-logout protected access.
 
 ## Bootstrap and trusted publishing
 
@@ -69,6 +70,15 @@ The coordinated `0.1.0-beta.1` release was published by GitHub Actions run `2963
 
 The stable candidate must be committed on `main` with both package manifests at `0.1.0`, the exact Nuxt dependency on `@relykit/oidc@0.1.0`, a matching lockfile, current changelog/support wording, and green CI.
 
+The locally packed candidate passed the complete repository gate, clean disposable Rent Helper build, and real IdFabric hinted, hintless, replay, unavailable-provider recovery, and browser reauthentication smoke on 2026-07-19. Its SHA-256 checksums are comparison evidence for the workflow dry run:
+
+```text
+@relykit/oidc  b3da1579305b1e4e58967984d269cf27199637feb6cfee048cddd98a3cb2dee1
+@relykit/nuxt  f8ec09fd8e495a0d34fc6fa0818848047305e524e5a8f53fe30bd91b1c9e33fa
+```
+
+The protected workflow must rebuild from the reviewed commit. A checksum difference is therefore a review stop that requires explaining the build-input difference and rerunning the clean-consumer and real-provider gates against the retained workflow artifacts before publication.
+
 1. Run the release workflow with `version=0.1.0`, `tag=latest`, `access=public`, and `dry_run=true`.
 2. Approve the protected `npm` environment when GitHub requests owner review.
 3. Download the retained `relykit-0.1.0` artifact, inspect both tarballs, record SHA-256 checksums, and install them in a clean consumer.
@@ -90,12 +100,7 @@ gh workflow run release.yml --repo bi0nd0/relykit --ref main \
 
 Each dispatch pauses at the protected `npm` environment until `bi0nd0` approves it in GitHub Actions. Approval authorizes that single run only. The dry run never executes either `npm publish` step.
 
-The locally reviewed candidate tarballs have these SHA-256 checksums; the retained GitHub dry-run artifact must match them before publication:
-
-```text
-@relykit/oidc  233d201bf812e27ea5b5c596bfcc0489fa13ddef58f5d0e23463267d0d3169c8
-@relykit/nuxt  f8bae8507f842595d4d9a3b332926f50581c6102c5ed464eb3f7296ac0f7f9f3
-```
+Generate and record new candidate checksums only after the complete logout implementation, clean package verification, and real-provider gate are green. Earlier local `0.1.0` candidate checksums are superseded and must not be used for publication comparison.
 
 Do not publish from a local token or move `latest` by hand before both packages exist. The workflow publishes OIDC first; if Nuxt then fails, preserve the evidence, do not overwrite `0.1.0`, and recover with a coordinated `0.1.1` release.
 

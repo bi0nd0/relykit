@@ -38,13 +38,23 @@ const authRuntimeConfigSchema = z.object({
   sessionMaxAgeSeconds: z.coerce.number().int().positive().max(60 * 60 * 24 * 30),
   sessionCookieName: cookieNameSchema,
   flowCookieName: cookieNameSchema,
+  logoutCookieName: cookieNameSchema,
   secureCookies: z.preprocess(secureCookieSetting, z.union([z.literal('auto'), z.boolean()])),
 }).superRefine((value, context) => {
   if (value.clientAuthenticationMethod !== 'none' && !value.clientSecret) {
     context.addIssue({ code: 'custom', path: ['clientSecret'], message: 'A client secret is required for confidential clients.' })
   }
-  if (value.sessionCookieName === value.flowCookieName) {
-    context.addIssue({ code: 'custom', path: ['flowCookieName'], message: 'Session and flow cookies must use distinct names.' })
+  const cookieNames = [value.sessionCookieName, value.flowCookieName, value.logoutCookieName]
+  if (new Set(cookieNames).size !== cookieNames.length) {
+    context.addIssue({ code: 'custom', path: ['logoutCookieName'], message: 'Authentication cookies must use distinct names.' })
+  }
+  if (value.postLogoutRedirectUri
+    && new URL(value.postLogoutRedirectUri).origin !== new URL(value.redirectUri).origin) {
+    context.addIssue({
+      code: 'custom',
+      path: ['postLogoutRedirectUri'],
+      message: 'The logout callback must use the same application origin as the login callback.',
+    })
   }
 })
 
@@ -54,6 +64,7 @@ export type AuthRuntimeConfig = {
   sessionMaxAgeSeconds: number
   sessionCookieName: string
   flowCookieName: string
+  logoutCookieName: string
   secureCookies: boolean
 }
 
@@ -95,6 +106,7 @@ export function parseAuthRuntimeConfig(value: unknown): AuthRuntimeConfig {
     sessionMaxAgeSeconds: parsed.sessionMaxAgeSeconds,
     sessionCookieName: parsed.sessionCookieName,
     flowCookieName: parsed.flowCookieName,
+    logoutCookieName: parsed.logoutCookieName,
     secureCookies,
   }
 }

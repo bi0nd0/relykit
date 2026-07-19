@@ -12,6 +12,7 @@ export function shouldProtectApi(path: string, options: NormalizedRelyKitNuxtMod
     options.loginPath,
     options.callbackPath,
     options.logoutPath,
+    options.logoutCallbackPath,
     options.accessPath,
   ]
   return ![

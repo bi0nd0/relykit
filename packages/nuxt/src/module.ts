@@ -80,6 +80,7 @@ export default defineNuxtModule<RelyKitNuxtModuleOptions>({
       sessionMaxAgeSeconds: 60 * 60 * 8,
       sessionCookieName: options.sessionCookieName,
       flowCookieName: options.flowCookieName,
+      logoutCookieName: options.logoutCookieName,
       secureCookies: 'auto',
       ...existingAuth,
     }
@@ -114,6 +115,11 @@ export default defineNuxtModule<RelyKitNuxtModuleOptions>({
       route: options.logoutPath,
       method: 'post',
       handler: resolver.resolve('./runtime/server/handlers/logout.post'),
+    })
+    addServerHandler({
+      route: options.logoutCallbackPath,
+      method: 'get',
+      handler: resolver.resolve('./runtime/server/handlers/logout-callback.get'),
     })
     addServerHandler({
       route: options.accessPath,

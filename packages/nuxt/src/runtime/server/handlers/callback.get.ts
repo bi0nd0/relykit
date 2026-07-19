@@ -17,6 +17,7 @@ import {
   clearOidcFlowCookie,
   useApplicationSession,
   useOidcFlowSession,
+  useOidcLogoutSession,
 } from '../session.js'
 
 export default defineEventHandler(async (event) => {
@@ -37,6 +38,13 @@ export default defineEventHandler(async (event) => {
       callbackUrl: getRequestURL(event).toString(),
       flow,
       identityProfile,
+    })
+    const logoutSession = await useOidcLogoutSession(event, config)
+    await logoutSession.clear()
+    await logoutSession.update({
+      idTokenHint: result.idToken,
+      state: null,
+      expiresAt: null,
     })
     const resolved = await principalAdapter.resolveLogin({ event, identity: result.identity })
     const principal = validateLoginPrincipal(resolved, result.identity)

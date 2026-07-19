@@ -9,9 +9,10 @@
 - `defaultPageAccess`: `public`, `guest-only`, `authenticated`, or `{ permission }`;
 - `requiredApiPermission`: optional permission required by protected APIs;
 - `loginPage`, `accessDeniedPage`, and `authenticatedHome`: application-owned page destinations;
-- `loginPath`, `callbackPath`, `logoutPath`, and `accessPath`: unique internal handler paths;
+- `loginPath`, `callbackPath`, `logoutPath`, `logoutCallbackPath`, and `accessPath`: unique internal handler paths;
 - `protectedApiPrefixes`, `publicApiPaths`, and `independentlyAuthenticatedApiPaths`: exact server policy boundaries;
-- `sessionCookieName`, `flowCookieName`, and `clientStateKey`: collision-free application names.
+- `sessionCookieName`, `flowCookieName`, `logoutCookieName`, and `clientStateKey`: collision-free application names;
+- `logoutTransitionTitle`, `logoutTransitionMessage`, and `logoutTransitionAction`: consumer-owned transport-page wording.
 
 Routes must be absolute application paths without origins, queries, or fragments. API exceptions are exact paths. Protected prefixes match a path boundary, so `/api` does not accidentally match `/apiary`.
 
@@ -60,3 +61,5 @@ Server handlers can import `requireActivePrincipal` and `requirePermission` from
 ## Client composable
 
 `useAuthSession()` exposes `session`, `principal`, `authenticated`, `ready`, `refresh`, and `logout`. The access probe does not create an anonymous session cookie. State keys are consumer-configurable so multiple applications on one origin do not collide.
+
+`logout()` submits a native same-origin POST rather than fetching JSON. The handler clears local authentication first, retains only the separately sealed verified ID-token hint, and returns an auto-submitting form with strict CSP, no-store, no-referrer, frame denial, and a visible manual action. The form submits `client_id`, optional `id_token_hint`, exact callback URI, and state to the discovered provider. The callback consumes state once and redirects to `loginPage?logout=complete`; missing, expired, mismatched, replayed, or provider-error callbacks use `logout=state_invalid`. Discovery/provider failures use `logout=provider_unavailable` after local logout so the application can show a truthful retry action.

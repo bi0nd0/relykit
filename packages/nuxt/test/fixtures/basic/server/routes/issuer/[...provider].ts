@@ -2,6 +2,8 @@ import {
   exportJWK,
   generateKeyPair,
   SignJWT,
+  createLocalJWKSet,
+  jwtVerify,
 } from 'jose'
 
 let signingKeys: Awaited<ReturnType<typeof createSigningKeys>> | undefined
@@ -69,6 +71,7 @@ export default defineEventHandler(async (event) => {
       email_verified: true,
       name: payload.subject === 'denied-subject' ? 'Denied User' : 'Fixture Admin',
       preferred_username: payload.subject === 'denied-subject' ? 'denied' : 'fixture-admin',
+      sid: '65f7cf35-7c97-4ed8-9d8e-572011118c88',
     })
       .setProtectedHeader({ alg: 'RS256', kid: 'fixture-key' })
       .setIssuer(issuer)
@@ -90,8 +93,26 @@ export default defineEventHandler(async (event) => {
   }
 
   if (route === 'oauth2/end-session') {
-    const query = getQuery(event)
-    return sendRedirect(event, String(query.post_logout_redirect_uri ?? '/login'), 302)
+    if (event.method !== 'POST') throw createError({ statusCode: 405 })
+    const body = new URLSearchParams(await readRawBody(event) ?? '')
+    const clientId = body.get('client_id')
+    const idTokenHint = body.get('id_token_hint')
+    const redirectUri = body.get('post_logout_redirect_uri')
+    const state = body.get('state')
+    if (clientId !== 'fixture-web' || !redirectUri || !state) {
+      throw createError({ statusCode: 400 })
+    }
+    if (idTokenHint) {
+      const { publicJwk } = await keys()
+      await jwtVerify(idTokenHint, createLocalJWKSet({ keys: [publicJwk] }), {
+        issuer,
+        audience: 'fixture-web',
+        algorithms: ['RS256'],
+      })
+    }
+    const target = new URL(redirectUri)
+    target.searchParams.set('state', state)
+    return sendRedirect(event, target.toString(), 302)
   }
 
   throw createError({ statusCode: 404 })

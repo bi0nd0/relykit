@@ -15,14 +15,25 @@ type OidcFlowSessionData = {
   flow?: OidcFlowState
 }
 
-function derivedPassword(password: string, purpose: 'application' | 'oidc-flow') {
+export type OidcLogoutSessionData = {
+  idTokenHint?: string
+  state?: string | null
+  expiresAt?: number | null
+}
+
+function derivedPassword(password: string, purpose: 'application' | 'oidc-flow' | 'oidc-logout') {
   return createHash('sha256')
     .update(`oidc-client-session-v1:${purpose}:`)
     .update(password)
     .digest('hex')
 }
 
-function cookieConfig(config: AuthRuntimeConfig, name: string, purpose: 'application' | 'oidc-flow', maxAge: number): SessionConfig {
+function cookieConfig(
+  config: AuthRuntimeConfig,
+  name: string,
+  purpose: 'application' | 'oidc-flow' | 'oidc-logout',
+  maxAge: number,
+): SessionConfig {
   return {
     name,
     password: derivedPassword(config.sessionPassword, purpose),
@@ -65,6 +76,15 @@ export function useOidcFlowSession(event: H3Event, config: AuthRuntimeConfig) {
   return useSession<OidcFlowSessionData>(event, cookieConfig(config, config.flowCookieName, 'oidc-flow', 10 * 60))
 }
 
+export function useOidcLogoutSession(event: H3Event, config: AuthRuntimeConfig) {
+  return useSession<OidcLogoutSessionData>(event, cookieConfig(
+    config,
+    config.logoutCookieName,
+    'oidc-logout',
+    config.sessionMaxAgeSeconds,
+  ))
+}
+
 export function clearAuthCookies(event: H3Event, config: AuthRuntimeConfig) {
   deleteCookie(event, config.sessionCookieName, { path: '/' })
   deleteCookie(event, config.flowCookieName, { path: '/' })
@@ -72,4 +92,8 @@ export function clearAuthCookies(event: H3Event, config: AuthRuntimeConfig) {
 
 export function clearOidcFlowCookie(event: H3Event, config: AuthRuntimeConfig) {
   deleteCookie(event, config.flowCookieName, { path: '/' })
+}
+
+export function clearOidcLogoutCookie(event: H3Event, config: AuthRuntimeConfig) {
+  deleteCookie(event, config.logoutCookieName, { path: '/' })
 }

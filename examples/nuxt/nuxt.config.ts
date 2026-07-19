@@ -7,6 +7,7 @@ export default defineNuxtConfig({
       accessDeniedPage: '/not-authorized',
       sessionCookieName: 'example-session',
       flowCookieName: 'example-flow',
+      logoutCookieName: 'example-logout-flow',
       clientStateKey: 'example-auth',
     },
   ]],
