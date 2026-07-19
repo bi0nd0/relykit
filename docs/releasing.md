@@ -11,7 +11,7 @@ RelyKit uses one fixed version for `@relykit/oidc` and `@relykit/nuxt`. The Nuxt
 - Security contact: GitHub private vulnerability reporting.
 - Supported stable range: Node.js >=22.18 and <27, npm >=10 and <12, and Nuxt >=4.4 and <5.
 
-The interactive `0.1.0-beta.0` bootstrap and provenance-backed `0.1.0-beta.1` release are published. Registry artifacts match retained GitHub artifacts, and Rent Helper passed the beta.1 integration gates. Stable `0.1.0` adds the complete RP-initiated logout contract and therefore requires fresh clean-package plus real IdFabric/Rent Helper evidence; prior beta logout evidence does not authorize publication. Publication remains an explicit owner action.
+The interactive `0.1.0-beta.0` bootstrap, provenance-backed `0.1.0-beta.1`, and stable `0.1.0` releases are published. Stable registry artifacts match the retained GitHub artifacts byte-for-byte, and Rent Helper passed the clean-package and real IdFabric integration gates. Every future publication remains an explicit owner action.
 
 ## Owner responsibilities
 
@@ -66,31 +66,39 @@ The coordinated `0.1.0-beta.1` release was published by GitHub Actions run `2963
 @relykit/nuxt  fb5c6f3db2dee9288e2a2385f5b1de6cde57731eab6e33a9b39e58fd01a533fd
 ```
 
-## Stable 0.1.0 publication
+## Stable 0.1.0 publication record
 
-The stable candidate must be committed on `main` with both package manifests at `0.1.0`, the exact Nuxt dependency on `@relykit/oidc@0.1.0`, a matching lockfile, current changelog/support wording, and green CI.
+Stable `0.1.0` was published from commit `d28ded613e90ca4a003ef1ae5be1240454837d73`. Protected dry-run workflow `29697045636` built the authoritative artifacts, and protected publication workflow `29697114980` validated that exact source run, downloaded its retained bytes, verified `SHA256SUMS`, and published without repacking.
 
 The locally packed candidate passed the complete repository gate, clean disposable Rent Helper build, and real IdFabric hinted, hintless, replay, unavailable-provider recovery, and browser reauthentication smoke on 2026-07-19. Its package payloads were later confirmed file-for-file identical to the protected workflow artifacts. The outer npm tarball bytes are not used as a cross-environment reproducibility promise because gzip compression can differ while the extracted payload remains identical.
 
+The npm records are public, `latest` resolves to `0.1.0`, Nuxt depends on exact OIDC `0.1.0`, and both packages expose SLSA provenance. Registry downloads and [GitHub release v0.1.0](https://github.com/bi0nd0/relykit/releases/tag/v0.1.0) match these retained SHA-256 values:
+
+```text
+@relykit/oidc  1666dc26a84e1fd36010f5b87e4a968b06e6b36a359308d4ea84a20cd7152541
+@relykit/nuxt  05c494cc76640b0f14ecd0dc133621edae1a29ae256f5bf4c09b98184191776d
+```
+
+## Future coordinated releases
+
 The protected dry run is the publication artifact authority. It builds both tarballs once, records their exact SHA-256 values in `SHA256SUMS`, and retains all three files in GitHub Actions. The publication run accepts that successful dry-run run ID, verifies the run used the same commit and release workflow, downloads those exact retained files, verifies the manifest, and publishes them without invoking `npm pack` again.
 
-1. Run the release workflow with `version=0.1.0`, `tag=latest`, `access=public`, and `dry_run=true`.
+1. Run the release workflow with the exact coordinated version, intended `next` or `latest` tag, `access=public`, and `dry_run=true`.
 2. Approve the protected `npm` environment when GitHub requests owner review.
-3. Download the retained `relykit-0.1.0` artifact, verify `SHA256SUMS`, inspect both tarballs, and install them in a clean consumer.
+3. Download the retained `relykit-<version>` artifact, verify `SHA256SUMS`, inspect both tarballs, and install them in a clean consumer.
 4. Re-run the workflow with `dry_run=false` and `artifact_run_id=<successful-dry-run-id>`, then approve the same protected environment. Publication fails closed if the source run did not succeed on the exact publication commit and workflow.
-5. Verify both npm records show `0.1.0`, `latest`, public access, the expected repository directory, SLSA provenance, and byte-for-byte agreement with the reviewed workflow artifacts.
-6. Create GitHub release `v0.1.0` from the published commit and attach the exact retained tarballs.
-7. Upgrade Rent Helper to exact `0.1.0` packages only after registry verification, then repeat its targeted production build and authentication smoke.
+5. Verify both npm records show the coordinated version, intended tag, public access, expected repository directory, SLSA provenance, and byte-for-byte agreement with the reviewed workflow artifacts.
+6. Create the matching GitHub release from the published commit and attach the exact retained tarballs plus `SHA256SUMS`.
 
 Dispatch the two workflow runs from an authenticated GitHub CLI session:
 
 ```bash
 gh workflow run release.yml --repo bi0nd0/relykit --ref main \
-  -f version=0.1.0 -f tag=latest -f access=public -f dry_run=true
+  -f version=<version> -f tag=<next-or-latest> -f access=public -f dry_run=true
 
 # After the retained dry-run artifact is reviewed:
 gh workflow run release.yml --repo bi0nd0/relykit --ref main \
-  -f version=0.1.0 -f tag=latest -f access=public -f dry_run=false \
+  -f version=<version> -f tag=<next-or-latest> -f access=public -f dry_run=false \
   -f artifact_run_id=<successful-dry-run-id>
 ```
 

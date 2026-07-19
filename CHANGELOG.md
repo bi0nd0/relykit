@@ -2,7 +2,7 @@
 
 All notable changes are documented here. RelyKit follows coordinated package versions.
 
-## 0.1.0 - 2026-07-18
+## 0.1.0 - 2026-07-19
 
 - Added a structured, provider-neutral RP-Initiated Logout request to `@relykit/oidc` so ID tokens are transported in a form POST instead of a browser URL.
 - Added the complete Nuxt logout lifecycle: separately sealed ID-token evidence, one-time state, same-origin initiation, constrained transition forms, verified callbacks, replay rejection, and explicit provider-failure recovery.

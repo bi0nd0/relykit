@@ -2,7 +2,7 @@
 
 RelyKit is a white-label, provider-neutral OpenID Connect toolkit for relying applications. It handles authentication plumbing; your application keeps ownership of users, account status, roles, permissions, pages, wording, and branding.
 
-> **Release status:** `0.1.0` is the first stable candidate. It includes the complete RP-initiated logout contract added after the provenance-backed `0.1.0-beta.1` integration. RelyKit is MIT-licensed and its scoped packages are public; publishing the stable candidate remains an explicit owner action after real-provider verification.
+> **Release status:** `0.1.0` is the first stable release. It includes the complete RP-initiated logout contract, is public on npm under `latest` with SLSA provenance, and is retained with byte-identical artifacts in [GitHub release v0.1.0](https://github.com/bi0nd0/relykit/releases/tag/v0.1.0).
 
 ## Packages
 
@@ -150,4 +150,4 @@ npm run build --workspace @relykit/example-nuxt
 npm audit --omit=dev
 ```
 
-See [CONTRIBUTING.md](CONTRIBUTING.md), the [MIT license](LICENSE), and [docs/releasing.md](docs/releasing.md). Publication remains an explicit owner action.
+See [CONTRIBUTING.md](CONTRIBUTING.md), the [MIT license](LICENSE), and [docs/releasing.md](docs/releasing.md). Every future publication remains an explicit owner action through the protected release workflow.
