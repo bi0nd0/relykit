@@ -51,7 +51,7 @@ jobs:
       - run: npm audit --omit=dev
       - run: npm run check:release -- "${{ inputs.version }}"
       - run: npm run pack:packages
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: relykit-${{ inputs.version }}
           path: release-artifacts/*.tgz
