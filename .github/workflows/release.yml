@@ -28,8 +28,14 @@ on:
         required: true
         default: true
         type: boolean
+      artifact_run_id:
+        description: Successful dry-run workflow run containing the approved artifacts (required for publication)
+        required: false
+        default: ''
+        type: string
 
 permissions:
+  actions: read
   contents: read
   id-token: write
 
@@ -46,16 +52,51 @@ jobs:
           package-manager-cache: false
       - run: npm install --global npm@11.12.1
       - run: npm ci
+      - name: Validate approved artifact source
+        if: ${{ inputs.dry_run == false }}
+        env:
+          ARTIFACT_RUN_ID: ${{ inputs.artifact_run_id }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [[ ! "$ARTIFACT_RUN_ID" =~ ^[1-9][0-9]*$ ]]; then
+            echo "Publication requires the numeric run ID of a successful dry run."
+            exit 1
+          fi
+
+          metadata="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$ARTIFACT_RUN_ID" \
+            --jq '[.conclusion, .event, .head_sha, .path] | @tsv')"
+          IFS=$'\t' read -r source_conclusion source_event source_sha source_path <<< "$metadata"
+
+          if [ "$source_conclusion" != "success" ] \
+            || [ "$source_event" != "workflow_dispatch" ] \
+            || [ "$source_sha" != "$GITHUB_SHA" ] \
+            || [ "$source_path" != ".github/workflows/release.yml" ]; then
+            echo "The artifact run must be a successful release workflow dry run for the exact publication commit."
+            exit 1
+          fi
       - run: npm run check
       - run: npm run check:packages
       - run: npm audit --omit=dev
       - run: npm run check:release -- "${{ inputs.version }}"
       - run: npm run pack:packages
+        if: ${{ inputs.dry_run == true }}
       - uses: actions/upload-artifact@v7
+        if: ${{ inputs.dry_run == true }}
         with:
           name: relykit-${{ inputs.version }}
-          path: release-artifacts/*.tgz
+          path: release-artifacts/*
           if-no-files-found: error
+      - uses: actions/download-artifact@v8
+        if: ${{ inputs.dry_run == false }}
+        with:
+          name: relykit-${{ inputs.version }}
+          path: release-artifacts
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: ${{ inputs.artifact_run_id }}
+      - name: Verify approved artifact checksums
+        if: ${{ inputs.dry_run == false }}
+        run: npm run artifacts:checksums:verify
       - name: Publish OIDC package
         if: ${{ inputs.dry_run == false }}
         run: npm publish "./release-artifacts/relykit-oidc-${{ inputs.version }}.tgz" --access "${{ inputs.access }}" --tag "${{ inputs.tag }}"

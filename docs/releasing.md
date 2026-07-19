@@ -22,7 +22,7 @@ The repository owner performs npm sign-in, organization/scope creation, maintain
 1. Coordinate both package versions and keep `@relykit/nuxt`'s `@relykit/oidc` dependency exact.
 2. Run the local gate in [testing.md](testing.md).
 3. Run `npm run check:release -- <version>`.
-4. Run `npm run pack:packages`; inspect `release-artifacts/` and record SHA-256 checksums.
+4. Run `npm run pack:packages`; inspect `release-artifacts/` and its generated `SHA256SUMS` manifest.
 5. Install both tarballs in a clean Nuxt consumer and build it without workspace resolution.
 6. Run hinted, hintless, invalid, replayed, and unavailable-provider logout against a real conforming provider; inspect browser URLs, transition headers, callback state, and post-logout protected access.
 
@@ -70,19 +70,14 @@ The coordinated `0.1.0-beta.1` release was published by GitHub Actions run `2963
 
 The stable candidate must be committed on `main` with both package manifests at `0.1.0`, the exact Nuxt dependency on `@relykit/oidc@0.1.0`, a matching lockfile, current changelog/support wording, and green CI.
 
-The locally packed candidate passed the complete repository gate, clean disposable Rent Helper build, and real IdFabric hinted, hintless, replay, unavailable-provider recovery, and browser reauthentication smoke on 2026-07-19. Its SHA-256 checksums are comparison evidence for the workflow dry run:
+The locally packed candidate passed the complete repository gate, clean disposable Rent Helper build, and real IdFabric hinted, hintless, replay, unavailable-provider recovery, and browser reauthentication smoke on 2026-07-19. Its package payloads were later confirmed file-for-file identical to the protected workflow artifacts. The outer npm tarball bytes are not used as a cross-environment reproducibility promise because gzip compression can differ while the extracted payload remains identical.
 
-```text
-@relykit/oidc  b3da1579305b1e4e58967984d269cf27199637feb6cfee048cddd98a3cb2dee1
-@relykit/nuxt  f8ec09fd8e495a0d34fc6fa0818848047305e524e5a8f53fe30bd91b1c9e33fa
-```
-
-The protected workflow must rebuild from the reviewed commit. A checksum difference is therefore a review stop that requires explaining the build-input difference and rerunning the clean-consumer and real-provider gates against the retained workflow artifacts before publication.
+The protected dry run is the publication artifact authority. It builds both tarballs once, records their exact SHA-256 values in `SHA256SUMS`, and retains all three files in GitHub Actions. The publication run accepts that successful dry-run run ID, verifies the run used the same commit and release workflow, downloads those exact retained files, verifies the manifest, and publishes them without invoking `npm pack` again.
 
 1. Run the release workflow with `version=0.1.0`, `tag=latest`, `access=public`, and `dry_run=true`.
 2. Approve the protected `npm` environment when GitHub requests owner review.
-3. Download the retained `relykit-0.1.0` artifact, inspect both tarballs, record SHA-256 checksums, and install them in a clean consumer.
-4. Re-run the workflow with the same inputs except `dry_run=false`, then approve the same protected environment.
+3. Download the retained `relykit-0.1.0` artifact, verify `SHA256SUMS`, inspect both tarballs, and install them in a clean consumer.
+4. Re-run the workflow with `dry_run=false` and `artifact_run_id=<successful-dry-run-id>`, then approve the same protected environment. Publication fails closed if the source run did not succeed on the exact publication commit and workflow.
 5. Verify both npm records show `0.1.0`, `latest`, public access, the expected repository directory, SLSA provenance, and byte-for-byte agreement with the reviewed workflow artifacts.
 6. Create GitHub release `v0.1.0` from the published commit and attach the exact retained tarballs.
 7. Upgrade Rent Helper to exact `0.1.0` packages only after registry verification, then repeat its targeted production build and authentication smoke.
@@ -95,12 +90,13 @@ gh workflow run release.yml --repo bi0nd0/relykit --ref main \
 
 # After the retained dry-run artifact is reviewed:
 gh workflow run release.yml --repo bi0nd0/relykit --ref main \
-  -f version=0.1.0 -f tag=latest -f access=public -f dry_run=false
+  -f version=0.1.0 -f tag=latest -f access=public -f dry_run=false \
+  -f artifact_run_id=<successful-dry-run-id>
 ```
 
 Each dispatch pauses at the protected `npm` environment until `bi0nd0` approves it in GitHub Actions. Approval authorizes that single run only. The dry run never executes either `npm publish` step.
 
-Generate and record new candidate checksums only after the complete logout implementation, clean package verification, and real-provider gate are green. Earlier local `0.1.0` candidate checksums are superseded and must not be used for publication comparison.
+Record the retained dry-run checksums only after the complete logout implementation, clean package verification, and real-provider gate are green. Earlier local `0.1.0` tarball checksums are superseded and must not be used as the publication identity.
 
 Do not publish from a local token or move `latest` by hand before both packages exist. The workflow publishes OIDC first; if Nuxt then fails, preserve the evidence, do not overwrite `0.1.0`, and recover with a coordinated `0.1.1` release.
 
