@@ -17,6 +17,9 @@ export function createLogoutForm(
     action: 'Continue signing out',
   },
 ) {
+  if (request.method !== 'POST') {
+    throw new Error('The logout transition form requires a POST request.')
+  }
   const nonce = randomBytes(24).toString('base64url')
   const fields = Object.entries(request.parameters)
     .filter((entry): entry is [string, string] => typeof entry[1] === 'string')

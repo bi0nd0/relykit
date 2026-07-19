@@ -2,6 +2,12 @@
 
 All notable changes are documented here. RelyKit follows coordinated package versions.
 
+## 0.1.1 - 2026-07-19
+
+- Use a state-bound top-level GET for hintless RP-initiated logout so standards-conforming Lax provider session cookies reach the required confirmation flow.
+- Keep every logout carrying an ID-token hint on the no-store, no-referrer, CSP-constrained form POST path so ID tokens never enter URLs.
+- Enforce the transport split in the core request contract, Nuxt adapter, synthetic provider, tests, and public documentation.
+
 ## 0.1.0 - 2026-07-19
 
 - Added a structured, provider-neutral RP-Initiated Logout request to `@relykit/oidc` so ID tokens are transported in a form POST instead of a browser URL.

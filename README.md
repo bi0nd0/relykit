@@ -2,7 +2,7 @@
 
 RelyKit is a white-label, provider-neutral OpenID Connect toolkit for relying applications. It handles authentication plumbing; your application keeps ownership of users, account status, roles, permissions, pages, wording, and branding.
 
-> **Release status:** `0.1.0` is the first stable release. It includes the complete RP-initiated logout contract, is public on npm under `latest` with SLSA provenance, and is retained with byte-identical artifacts in [GitHub release v0.1.0](https://github.com/bi0nd0/relykit/releases/tag/v0.1.0).
+> **Release status:** `0.1.1` is the current coordinated stable version. It preserves token-bearing provider logout as POST and uses standards-defined GET only when no ID-token hint exists so the provider can require confirmation with its Lax session cookie.
 
 ## Packages
 
@@ -122,7 +122,7 @@ Start the application and verify this sequence:
 2. Continue redirects to the expected IdFabric realm.
 3. IdFabric returns to `/api/auth/callback`, and RelyKit creates the application session.
 4. A protected API succeeds only for an active local principal with the required application permission.
-5. Logout clears the local session, submits a state-bound form POST to IdFabric's advertised end-session endpoint, validates the logout callback, and returns to the application sign-in page.
+5. Logout clears the local session, then sends a state-bound request to IdFabric's advertised end-session endpoint: form POST when an ID-token hint exists, or top-level GET without a token when the provider must confirm a legacy hintless session. RelyKit validates the callback and returns to the application sign-in page.
 6. An authenticated IdFabric identity with no active local principal reaches the application's access-denied page.
 
 If the callback fails, compare the configured issuer, client ID, callback URL, authentication method, and scopes character-for-character with the IdFabric client. See the private [IdFabric README](https://github.com/bi0nd0/idfabric#connect-a-nuxt-application-with-relykit) for the provider side of the same handoff.
@@ -131,7 +131,7 @@ If the callback fails, compare the configured issuer, client ID, callback URL, a
 
 - The issuer is server-owned configuration; browser input cannot select discovery endpoints.
 - State, nonce, S256 PKCE, exact issuer/audience checks, allowed signing algorithms, bounded responses, and safe local return paths fail closed.
-- Access and refresh tokens stay server-side. The verified ID token used for logout is retained only in a dedicated sealed, HttpOnly cookie and appears transiently in the no-store, no-referrer, CSP-constrained provider POST form—not in URLs, logs, JSON, or application state.
+- Access and refresh tokens stay server-side. The verified ID token used for logout is retained only in a dedicated sealed, HttpOnly cookie and appears transiently in the no-store, no-referrer, CSP-constrained provider POST form—not in URLs, logs, JSON, or application state. Hintless logout uses a top-level GET containing only the client ID, exact callback, and one-time state so the provider's Lax session cookie reaches its confirmation flow.
 - RelyKit renders no UI and grants no application permission by itself.
 
 Read [architecture](docs/architecture.md), [configuration](docs/configuration.md), [Nuxt integration](docs/nuxt.md), [security policy](SECURITY.md), and [testing](docs/testing.md) before production use.

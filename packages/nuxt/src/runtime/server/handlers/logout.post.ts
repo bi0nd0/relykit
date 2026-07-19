@@ -10,6 +10,7 @@ import {
 } from 'h3'
 import { pathWithQuery } from '../redirects.js'
 import { createLogoutForm } from '../logout-form.js'
+import { createHintlessLogoutRedirect } from '../logout-redirect.js'
 import {
   requireAuthModuleOptions,
   requireAuthRuntimeConfig,
@@ -61,6 +62,12 @@ export default defineEventHandler(async (event) => {
     state: request.state,
     expiresAt: Date.now() + 10 * 60_000,
   })
+
+  if (request.method === 'GET') {
+    const response = createHintlessLogoutRedirect(request)
+    setResponseHeaders(event, response.headers)
+    return sendRedirect(event, response.location, 303)
+  }
 
   const response = createLogoutForm(request, {
     title: options.logoutTransitionTitle,
