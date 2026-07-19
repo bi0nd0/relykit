@@ -236,6 +236,24 @@ describe('provider-neutral OIDC client', () => {
     expect(result?.endpoint).not.toContain('signed-id-token')
   })
 
+  it('uses a state-bound GET request when no ID-token hint is available', async () => {
+    const result = await startLogout({
+      config,
+      fetcher: discoveryFetch(),
+    })
+    expect(result).toMatchObject({
+      endpoint: 'https://identity.example.com/oauth2/end-session',
+      method: 'GET',
+      parameters: {
+        client_id: config.clientId,
+        post_logout_redirect_uri: config.postLogoutRedirectUri,
+      },
+    })
+    expect(result?.state).toBeTruthy()
+    expect(result?.parameters.state).toBe(result?.state)
+    expect(result?.parameters).not.toHaveProperty('id_token_hint')
+  })
+
   it('returns no logout request when discovery does not advertise an endpoint', async () => {
     const document = createDiscoveryDocument(config.issuer)
     delete document.end_session_endpoint

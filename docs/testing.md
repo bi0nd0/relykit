@@ -17,8 +17,8 @@ npm audit --omit=dev
 ## Test ownership
 
 - Pure access and URL policy is unit-tested in `packages/oidc/test`.
-- OIDC service tests use synthetic discovery, token, signing-key, and UserInfo responses; they cover state, nonce, S256 PKCE, issuer, audience, signature, bounded responses, timeout, client authentication, profile mapping, and structured logout POST requests.
-- Nuxt tests cover option normalization, API policy, redirects, principal binding/reload, runtime configuration, logout callback state, and CSP-constrained logout form construction.
+- OIDC service tests use synthetic discovery, token, signing-key, and UserInfo responses; they cover state, nonce, S256 PKCE, issuer, audience, signature, bounded responses, timeout, client authentication, profile mapping, hinted POST logout, and hintless GET logout.
+- Nuxt tests cover option normalization, API policy, redirects, principal binding/reload, runtime configuration, logout callback state, CSP-constrained logout form construction, and token-free hintless redirect construction.
 - `packages/nuxt/test/fixtures/basic` is the production-build and runtime fixture.
 - `examples/nuxt` proves the documented public imports and setup compile independently.
 
@@ -34,8 +34,8 @@ The fixture smoke must prove:
 4. an active principal can access the protected page and API;
 5. an unbound/inactive principal is denied;
 6. logout clears application and flow cookies while retaining only sealed logout evidence;
-7. the transition response is no-store/no-referrer, its CSP permits only the exact provider form target, and its URL contains no token;
-8. the provider receives POST with client, hint when available, exact callback, and one-time state;
+7. every transition response is no-store/no-referrer and no URL contains a token;
+8. the provider receives POST with client, hint, exact callback, and one-time state when evidence exists, or a token-free top-level GET with client, exact callback, and state when confirmation is required;
 9. the callback consumes state once, and the post-logout protected API returns 401;
 10. provider unavailability produces a truthful retryable outcome rather than a false completion;
 11. public HTML, headers, redirects, cookies, and normal-flow output contain no package/provider/application branding not supplied by the fixture.

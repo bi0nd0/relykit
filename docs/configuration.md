@@ -12,7 +12,7 @@
 - `idTokenAlgorithms`: a non-empty subset of `RS256`, `ES256`, and `EdDSA`;
 - `requestTimeoutMs`: positive provider request timeout.
 
-`postLogoutRedirectUri` is optional in the framework-neutral core. When present, `startLogout` creates one-time state and includes the exact URI plus `client_id` and optional `id_token_hint` in a structured POST request. Non-default token-endpoint authentication methods must be advertised by discovery metadata. If metadata advertises methods, the configured method must be included.
+`postLogoutRedirectUri` is optional in the framework-neutral core. When present, `startLogout` creates one-time state and includes the exact URI plus `client_id` and optional `id_token_hint` in a structured request. A request carrying an ID-token hint is POST so the token never enters a URL. A hintless request is GET so a top-level navigation sends a standards-conforming Lax provider session cookie and the provider can require confirmation. Non-default token-endpoint authentication methods must be advertised by discovery metadata. If metadata advertises methods, the configured method must be included.
 
 Do not derive `issuer` from a query parameter, request body, untrusted tenant name, or ID-token claim. Multi-issuer applications must select from a server-owned allowlist before calling RelyKit.
 

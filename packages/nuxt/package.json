@@ -1,6 +1,6 @@
 {
   "name": "@relykit/nuxt",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "White-label Nuxt 4 adapter for OpenID Connect authentication and application-owned authorization.",
   "keywords": [
     "authentication",
@@ -50,7 +50,7 @@
   },
   "dependencies": {
     "@nuxt/kit": "4.4.8",
-    "@relykit/oidc": "0.1.0",
+    "@relykit/oidc": "0.1.1",
     "h3": "1.15.11",
     "nitropack": "2.13.4",
     "zod": "4.4.3"

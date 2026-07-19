@@ -51,17 +51,22 @@ export type FinishLoginResult<TProfile = StandardIdentityProfile> = {
   returnTo: string
 }
 
+type OidcLogoutParameters = {
+  client_id: string
+  post_logout_redirect_uri?: string
+  state?: string
+}
+
 export type OidcLogoutRequest = {
   endpoint: string
-  method: 'POST'
-  parameters: {
-    client_id: string
-    id_token_hint?: string
-    post_logout_redirect_uri?: string
-    state?: string
-  }
   state: string | null
-}
+} & ({
+  method: 'POST'
+  parameters: OidcLogoutParameters & { id_token_hint: string }
+} | {
+  method: 'GET'
+  parameters: OidcLogoutParameters & { id_token_hint?: never }
+})
 
 function base64url(value: Buffer) {
   return value.toString('base64url')
@@ -359,15 +364,22 @@ export async function startLogout(input: {
     return null
   }
   const endpoint = new URL(discovery.end_session_endpoint).toString()
-  const parameters: OidcLogoutRequest['parameters'] = {
+  const parameters: OidcLogoutParameters = {
     client_id: config.clientId,
   }
-  if (input.idTokenHint) parameters.id_token_hint = input.idTokenHint
   let state: string | null = null
   if (config.postLogoutRedirectUri) {
     state = randomValue()
     parameters.post_logout_redirect_uri = config.postLogoutRedirectUri
     parameters.state = state
   }
-  return { endpoint, method: 'POST', parameters, state }
+  if (input.idTokenHint) {
+    return {
+      endpoint,
+      method: 'POST',
+      parameters: { ...parameters, id_token_hint: input.idTokenHint },
+      state,
+    }
+  }
+  return { endpoint, method: 'GET', parameters, state }
 }

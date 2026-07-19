@@ -93,13 +93,18 @@ export default defineEventHandler(async (event) => {
   }
 
   if (route === 'oauth2/end-session') {
-    if (event.method !== 'POST') throw createError({ statusCode: 405 })
-    const body = new URLSearchParams(await readRawBody(event) ?? '')
-    const clientId = body.get('client_id')
-    const idTokenHint = body.get('id_token_hint')
-    const redirectUri = body.get('post_logout_redirect_uri')
-    const state = body.get('state')
+    if (event.method !== 'GET' && event.method !== 'POST') throw createError({ statusCode: 405 })
+    const parameters = event.method === 'GET'
+      ? getRequestURL(event).searchParams
+      : new URLSearchParams(await readRawBody(event) ?? '')
+    const clientId = parameters.get('client_id')
+    const idTokenHint = parameters.get('id_token_hint')
+    const redirectUri = parameters.get('post_logout_redirect_uri')
+    const state = parameters.get('state')
     if (clientId !== 'fixture-web' || !redirectUri || !state) {
+      throw createError({ statusCode: 400 })
+    }
+    if ((event.method === 'POST') !== Boolean(idTokenHint)) {
       throw createError({ statusCode: 400 })
     }
     if (idTokenHint) {

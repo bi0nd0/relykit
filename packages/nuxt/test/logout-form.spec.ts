@@ -53,4 +53,13 @@ describe('logout form transition', () => {
     expect(response.html).not.toContain('<script>alert(1)</script>')
     expect(response.html).toContain('&quot;&gt;&lt;script&gt;')
   })
+
+  it('rejects GET requests so token-bearing behavior stays POST-only', () => {
+    expect(() => createLogoutForm({
+      endpoint: 'https://identity.example/end-session',
+      method: 'GET',
+      parameters: { client_id: 'client' },
+      state: null,
+    })).toThrow('requires a POST request')
+  })
 })

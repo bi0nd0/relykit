@@ -14,7 +14,7 @@ The external identity is not the application's user record. The immutable bindin
 
 ## Core facade
 
-The core exposes focused functions for `discover`, `startLogin`, `finishLogin`, `startLogout`, and `verifyAccessToken`. `startLogout` returns a provider-neutral `{ endpoint, method: 'POST', parameters, state }` request rather than a token-bearing URL. It has no Nuxt, H3, persistence, provider SDK, application-role, or UI dependency.
+The core exposes focused functions for `discover`, `startLogin`, `finishLogin`, `startLogout`, and `verifyAccessToken`. `startLogout` returns a provider-neutral `{ endpoint, method, parameters, state }` request. `method` is POST when an ID-token hint exists and GET only when the request is hintless. It has no Nuxt, H3, persistence, provider SDK, application-role, or UI dependency.
 
 `@relykit/oidc/access` is the browser-safe subpath. It contains pure decisions and safe-return-path handling without Node cryptography or server protocol orchestration.
 
@@ -32,7 +32,7 @@ The configured issuer is the only discovery origin. Discovery metadata must repo
 
 The Nuxt callback discards the short-lived flow session on every attempt. After the ID token is verified, it retains that token only in a separately derived sealed logout cookie, including when the local principal is denied. A successful identity still does not create access: the application principal adapter must return a matching, active principal. Protected requests reload that principal before permission checks.
 
-Logout is a two-session protocol. A native same-origin POST clears the local application and login-flow cookies, creates one-time logout state, and returns a no-store/no-referrer transition form constrained to the discovered end-session endpoint. A valid provider callback consumes both the one-time state and the retained logout evidence before returning to the application-owned login page. A callback with invalid state consumes only a matching active state, and an unsolicited callback cannot erase the evidence needed for a safe retry. Sessions created before logout evidence existed omit the hint and rely on the provider's standards-defined confirmation flow. Provider failure remains visible through the login-page `logout` query outcome; it is never reported as complete.
+Logout is a two-session protocol. A native same-origin POST clears the local application and login-flow cookies and creates one-time logout state. When retained evidence contains a verified ID token, the handler returns a no-store/no-referrer transition form constrained to POST that token to the discovered end-session endpoint. Sessions created before logout evidence existed instead receive a no-store 303 to a state-bound, token-free provider GET; that top-level navigation carries a Lax provider session cookie so the provider can identify the session and require confirmation. A valid provider callback consumes both the one-time state and retained logout evidence before returning to the application-owned login page. A callback with invalid state consumes only a matching active state, and an unsolicited callback cannot erase evidence needed for a safe retry. Provider failure remains visible through the login-page `logout` query outcome; it is never reported as complete.
 
 ## White-label contract
 
