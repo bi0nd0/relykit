@@ -16,6 +16,8 @@
 
 Do not derive `issuer` from a query parameter, request body, untrusted tenant name, or ID-token claim. Multi-issuer applications must select from a server-owned allowlist before calling RelyKit.
 
+The Nuxt `loginPath` accepts OIDC third-party initiation only when the request `iss` is character-for-character equal to this configured issuer. It does not normalize browser input, discover a different issuer, or accept `target_link_uri`. This lets an identity provider direct a browser to the registered application while the application remains the authority that creates state, nonce, PKCE, callback, and local session context.
+
 ## Identity profiles
 
 The default profile needs no UserInfo and returns an empty extension object. A custom strategy declares `userInfo` as `none`, `optional`, or `required` and maps only already verified ID-token claims plus subject-bound UserInfo.

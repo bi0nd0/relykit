@@ -2,7 +2,7 @@
 
 RelyKit is a white-label, provider-neutral OpenID Connect toolkit for relying applications. It handles authentication plumbing; your application keeps ownership of users, account status, roles, permissions, pages, wording, and branding.
 
-> **Release status:** `0.1.1` is the current coordinated stable version. It preserves token-bearing provider logout as POST and uses standards-defined GET only when no ID-token hint exists so the provider can require confirmation with its Lax session cookie.
+> **Release status:** `0.1.2` is the current coordinated stable version. It adds exact-issuer third-party login initiation for application-bound recovery links while preserving the protected logout transport introduced in `0.1.1`.
 
 ## Packages
 
@@ -107,6 +107,8 @@ const loginHref = computed(() => `/api/auth/login?${new URLSearchParams({
   <a :href="loginHref">Continue with identity provider</a>
 </template>
 ```
+
+The same configured `loginPath` is also the application's OpenID Connect third-party initiated login endpoint. It accepts GET or form POST with `iss`. RelyKit starts a new state, nonce, and S256-PKCE transaction only when `iss` exactly matches the server-configured issuer; POST without `iss`, mismatched/duplicate issuers, and caller-selected `target_link_uri` values fail closed. Browser input never selects discovery configuration or an application destination.
 
 Pages are protected by default. Override a page deliberately:
 

@@ -16,6 +16,8 @@
 
 Routes must be absolute application paths without origins, queries, or fragments. API exceptions are exact paths. Protected prefixes match a path boundary, so `/api` does not accidentally match `/apiary`.
 
+`loginPath` serves both ordinary application login and OpenID Connect third-party initiated login. A local GET may carry only a safe local `returnTo`. A third-party GET or form POST carries `iss`; RelyKit requires the exact server-configured issuer, ignores bounded `login_hint`, rejects caller-selected `target_link_uri`, and starts fresh state, nonce, and S256 PKCE. POST without `iss` is invalid. The request never changes the trusted issuer, discovery origin, callback URI, or local post-login destination.
+
 ## Principal adapter
 
 ```ts

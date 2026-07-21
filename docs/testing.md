@@ -19,6 +19,7 @@ npm audit --omit=dev
 - Pure access and URL policy is unit-tested in `packages/oidc/test`.
 - OIDC service tests use synthetic discovery, token, signing-key, and UserInfo responses; they cover state, nonce, S256 PKCE, issuer, audience, signature, bounded responses, timeout, client authentication, profile mapping, hinted POST logout, and hintless GET logout.
 - Nuxt tests cover option normalization, API policy, redirects, principal binding/reload, runtime configuration, logout callback state, CSP-constrained logout form construction, and token-free hintless redirect construction.
+- Nuxt initiation tests cover local GET login, third-party GET/form POST, exact configured-issuer comparison, ambiguous/mismatched/missing issuer rejection, unsupported target-link rejection, and shared handler registration.
 - `packages/nuxt/test/fixtures/basic` is the production-build and runtime fixture.
 - `examples/nuxt` proves the documented public imports and setup compile independently.
 
@@ -39,5 +40,6 @@ The fixture smoke must prove:
 9. the callback consumes state once, and the post-logout protected API returns 401;
 10. provider unavailability produces a truthful retryable outcome rather than a false completion;
 11. public HTML, headers, redirects, cookies, and normal-flow output contain no package/provider/application branding not supplied by the fixture.
+12. GET and form POST third-party initiation accept only the exact configured issuer and create a fresh authorization transaction without accepting a browser-selected destination.
 
 Registry releases add a clean consumer install from the exact tarballs and exact npm versions. Stable candidates also require a real relying application against a real provider to repeat callback, principal reload, suspension/denial, hinted and hintless logout, exact redirect, state replay, cross-session confirmation, and provider-unavailable recovery before `latest` moves. The synthetic fixture cannot substitute for that evidence.

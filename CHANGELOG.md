@@ -2,6 +2,13 @@
 
 All notable changes are documented here. RelyKit follows coordinated package versions.
 
+## Unreleased
+
+## 0.1.2 - 2026-07-20
+
+- Accept standards-aligned GET and form POST third-party login initiation on the configured Nuxt login path.
+- Require the request issuer to match server-owned configuration exactly, reject caller-selected target links, and start a fresh state, nonce, and S256-PKCE transaction.
+
 ## 0.1.1 - 2026-07-19
 
 - Use a state-bound top-level GET for hintless RP-initiated logout so standards-conforming Lax provider session cookies reach the required confirmation flow.

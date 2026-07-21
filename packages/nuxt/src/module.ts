@@ -104,7 +104,12 @@ export default defineNuxtModule<RelyKitNuxtModuleOptions>({
     addServerHandler({
       route: options.loginPath,
       method: 'get',
-      handler: resolver.resolve('./runtime/server/handlers/login.get'),
+      handler: resolver.resolve('./runtime/server/handlers/login'),
+    })
+    addServerHandler({
+      route: options.loginPath,
+      method: 'post',
+      handler: resolver.resolve('./runtime/server/handlers/login'),
     })
     addServerHandler({
       route: options.callbackPath,
